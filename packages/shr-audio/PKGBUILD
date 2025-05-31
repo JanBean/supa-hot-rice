@@ -1,0 +1,9 @@
+pkgname=shr-audio
+pkgver=1.0
+pkgrel=1
+pkgdesc='Supa Hot Rice Audio Dependencies'
+arch=(any)
+license=(None)
+depends=(
+
+)

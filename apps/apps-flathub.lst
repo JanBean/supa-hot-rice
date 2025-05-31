@@ -1,0 +1,19 @@
+# Some of Felix's Apps :)
+org.kde.krita
+com.obsproject.Studio
+com.github.Murmele.Gittyup
+
+# Games
+net.lutris.Lutris
+
+# Adjust flatpak permissoins
+com.github.tchx84.Flatseal
+
+# Audio controller
+com.saivert.pwvucontrol
+
+# Media
+com.interversehq.qView
+
+#software dev
+com.jetbrains.PyCharm-Community

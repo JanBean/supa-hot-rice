@@ -1,0 +1,9 @@
+pkgname=shr-input
+pkgver=1.0
+pkgrel=1
+pkgdesc='Supa Hot Rice input Dependencies'
+arch=(any)
+license=(None)
+depends=(
+         xpadneo-dkms # Xbox Controller
+)

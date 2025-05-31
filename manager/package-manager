@@ -1,0 +1,84 @@
+install_packages() {
+  # Collect all subdirectories (with PKGBUILD) inside ./packages
+  metapkgs=()
+  for dir in ./packages/*; do
+    [[ -d "$dir" && -f "$dir/PKGBUILD" ]] && metapkgs+=("$dir")
+  done
+
+  # Conditionally include Bibata theme if not already installed
+  [[ -f /usr/share/icons/Bibata-Modern-Classic/index.theme ]] || \
+    metapkgs+=(./packages/illogical-impulse-bibata-modern-classic-bin)
+
+  # Install all collected packages
+  for i in "${metapkgs[@]}"; do
+    metainstallflags="--needed"
+    $ask && showfun install_local_pkgbuild || metainstallflags="$metainstallflags --noconfirm"
+    ask_execute install_local_pkgbuild "$i" "$metainstallflags"
+  done
+}
+
+# yay -Bi is kinda hit or miss, instead cd into the relevant directory and manually source and install deps
+install_local_pkgbuild() {
+	local location=$1
+	local installflags=$2
+
+	on_error_retry pushd $location
+
+	source ./PKGBUILD # Execute commands from PKGBUILD file in the current shell
+
+  # install as dependencies to hide from explicit installed pkgs and auto romeovable
+	on_error_retry yay -S $installflags --asdeps "${depends[@]}"
+	# package local
+	on_error_retry makepkg -Asi --noconfirm
+
+	on_error_retry popd
+}
+
+uninstall_packages() {
+  # Collect all uninstall targets from packages
+  metapkgs=()
+  for dir in ./packages/*; do
+    [[ -d "$dir" && -f "$dir/PKGBUILD" ]] && metapkgs+=("$dir")
+  done
+
+  # Conditionally include Bibata if installed
+  [[ -f /usr/share/icons/Bibata-Modern-Classic/index.theme ]] && \
+    metapkgs+=(./packages/illogical-impulse-bibata-modern-classic-bin)
+
+  # Uninstall all collected packages
+  for i in "${metapkgs[@]}"; do
+    $ask && showfun uninstall_local_pkgbuild
+    ask_execute uninstall_local_pkgbuild "$i"
+  done
+}
+
+uninstall_local_pkgbuild() {
+	local location=$1
+
+	on_error_retry pushd "$location"
+
+	# Source the PKGBUILD to get pkgname
+	source ./PKGBUILD
+
+	# Uninstall all package names (handles split packages too)
+	on_error_retry yay -Rns --noconfirm "${pkgname[@]}"
+
+	on_error_retry popd
+}
+
+install_additional_dependencies() {
+  # strip dependencies file and load in pkglist array
+  remove_bashcomments_emptylines ${DEPLISTFILE} ./cache/dependencies_stripped.conf
+  readarray -t pkglist < ./cache/dependencies_stripped.conf
+
+  # Install extra packages from dependencies.conf as declared by the user
+  if (( ${#pkglist[@]} != 0 )); then
+    if $ask; then
+      # execute per element of the array $pkglist
+      for i in "${pkglist[@]}";do ask_execute yay -S --needed $i;done
+    else
+      # execute for all elements of the array $pkglist in one line
+      ask_execute yay -S --needed --noconfirm ${pkglist[*]}
+    fi
+  fi
+}

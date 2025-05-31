@@ -1,0 +1,87 @@
+# installs all apps, aur apps and flatpak apps
+install_apps() {
+  # Apps installation
+  mapfile -t apps < <(grep -vE '^\s*#|^\s*$' "./apps/apps.lst")
+  install_packages "${apps[@]}"
+
+  # Yay app installation
+  mapfile -t yay_apps < <(grep -vE '^\s*#|^\s*$' "./apps/apps-aur.lst")
+  install_yay_packages "${yay_apps[@]}"
+
+  # Flatpak app installation
+  mapfile -t flathub_apps < <(grep -vE '^\s*#|^\s*$' "./apps/apps-flathub.lst")
+  install_flathub_packages "${flathub_apps[@]}"
+}
+
+# Install required pacman packages
+install_packages() {
+    toInstall=()
+    for pkg; do
+        if [[ $(is_installed "${pkg}") == 0 ]]; then
+            echo ":: ${pkg} is already installed."
+            continue
+        fi
+        toInstall+=("${pkg}")
+    done
+    if [[ "${toInstall[@]}" == "" ]]; then
+        # nothing to install
+        return
+    fi
+    printf "Package not installed: %s\n" "${toInstall[@]}"
+    sudo pacman --noconfirm -S "${toInstall[@]}"
+}
+
+# Install required yay packages
+install_yay_packages() {
+    toInstall=()
+
+    # Install required yay packages
+    for pkg; do
+        if [[ $(is_installed "${pkg}") == 0 ]]; then
+            echo ":: ${pkg} is already installed."
+            continue
+        fi
+        toInstall+=("${pkg}")
+    done
+    if [[ "${toInstall[@]}" == "" ]]; then
+        # nothing to install
+        return
+    fi
+    printf "Yay package not installed: %s\n" "${toInstall[@]}"
+    yay -S --noconfirm "${toInstall[@]}"
+}
+
+# Install optional flatpak apps
+install_flathub_packages() {
+    toInstall=()
+    for pkg; do
+        # check if already installed
+        if flatpak list --app | awk '{print $2}' | grep -q "^$pkg$"; then
+            echo ":: ${pkg} is already installed."
+            continue
+        fi
+        toInstall+=("${pkg}")
+    done
+    
+    if [[ "${toInstall[@]}" == "" ]]; then
+        # nothing to install 
+        return
+    fi
+
+    if gum confirm "Install flatpak apps?"; then
+        for pkg in "${toInstall[@]}"; do
+            flatpak install flathub -y "${pkg}"
+        done
+    fi
+}
+
+is_installed() {
+    package="$1"
+    check="$(sudo pacman -Qs --color always "${package}" | grep "local" | grep "${package} ")"
+    if [ -n "${check}" ]; then
+        echo 0 #'0' means 'true' in Bash
+        return #true
+    fi
+    echo 1 #'1' means 'false' in Bash
+    return #false
+}

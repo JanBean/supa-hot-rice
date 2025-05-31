@@ -1,0 +1,18 @@
+# Felix recommends setting the font to 'JetBrainsMonoNL Nerd Font Mono'
+vscode
+
+firefox
+spotify-launcher
+discord
+davinci-resolve
+
+flatpak
+
+# with cuda https://wiki.archlinux.org/title/Blender
+blender
+
+# with multilib https://wiki.archlinux.org/title/Steam
+steam
+
+# native windows apps
+wine
