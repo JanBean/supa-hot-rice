@@ -1,4 +1,4 @@
-# SupaHotRice
+# Supa Hot Rice
  Supa hot Arch rice dot files and shit
 
  Run at your own risk lol
