@@ -11,7 +11,7 @@ function ask_execute() {
 }
 
 printf 'Hi there!\n'
-printf 'This script 1. will uninstall [JanBean/SupaHotRice > illogical-impulse] dotfiles\n'
+printf 'This script 1. will uninstall [JanBean/supa-hot-rice] dotfiles\n'
 printf '            2. will try to revert *mostly everything* installed using install.sh, so it'\''s pretty destructive\n'
 printf '            3. has not been tested, use at your own risk.\n'
 printf '            4. will show all commands that it runs.\n'
@@ -54,6 +54,6 @@ ask_execute sudo rm /etc/modules-load.d/i2c-dev.conf
 read -p "Do you want to uninstall packages used by the dotfiles?\nCtrl+C to exit, or press Enter to proceed"
 
 # Removing installed yay packages and dependencies
-ask_execute yay -Rns illogical-impulse-{ags,audio,backlight,basic,bibata-modern-classic-bin,fonts-themes,gnome,gtk,hyprland,microtex-git,oneui4-icons-git,portal,python,screencapture,widgets} plasma-browser-integration
+ask_execute yay -Rns shr-{ags,audio,backlight,basic,bibata-modern-classic-bin,fonts-themes,gnome,gtk,hyprland,microtex-git,oneui4-icons-git,portal,python,screencapture,widgets} plasma-browser-integration
 
 printf '\e[36mUninstall Complete.\n\e[97m'

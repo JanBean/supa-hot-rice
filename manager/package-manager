@@ -1,3 +1,10 @@
+# This is NOT a script for execution, but for loading functions, so NOT need execution permission or shebang.
+# NOTE that you NOT need to `cd ..' because the `$0' is NOT this file, but the script file which will source this file.
+
+# The script that use this file should have two lines on its top as follows:
+# cd "$(dirname "$0")"
+# export base="$(pwd)"
+
 install_packages() {
   # Collect all subdirectories (with PKGBUILD) inside ./packages
   metapkgs=()
@@ -7,7 +14,7 @@ install_packages() {
 
   # Conditionally include Bibata theme if not already installed
   [[ -f /usr/share/icons/Bibata-Modern-Classic/index.theme ]] || \
-    metapkgs+=(./packages/illogical-impulse-bibata-modern-classic-bin)
+    metapkgs+=(./packages/shr-bibata-modern-classic-bin)
 
   # Install all collected packages
   for i in "${metapkgs[@]}"; do
@@ -43,7 +50,7 @@ uninstall_packages() {
 
   # Conditionally include Bibata if installed
   [[ -f /usr/share/icons/Bibata-Modern-Classic/index.theme ]] && \
-    metapkgs+=(./packages/illogical-impulse-bibata-modern-classic-bin)
+    metapkgs+=(./packages/shr-bibata-modern-classic-bin)
 
   # Uninstall all collected packages
   for i in "${metapkgs[@]}"; do

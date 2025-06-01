@@ -1,18 +1,16 @@
-# Felix recommends setting the font to 'JetBrainsMonoNL Nerd Font Mono'
-vscode
+############################### Pacman Apps #######################################
 
+vscode # Felix recommends setting the font to 'JetBrainsMonoNL Nerd Font Mono'
 firefox
 spotify-launcher
 discord
 davinci-resolve
-
 flatpak
-
-# with cuda https://wiki.archlinux.org/title/Blender
 blender
+cuda # rendering backend support for blender
+wine # native windows apps
 
-# with multilib https://wiki.archlinux.org/title/Steam
-steam
+################################ AUR Apps #########################################
 
-# native windows apps
-wine
+pureref # image/reference viewer
+timeshift

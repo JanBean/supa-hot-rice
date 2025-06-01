@@ -1,23 +1,29 @@
+# This is NOT a script for execution, but for loading functions, so NOT need execution permission or shebang.
+# NOTE that you NOT need to `cd ..' because the `$0' is NOT this file, but the script file which will source this file.
+
+# The script that use this file should have two lines on its top as follows:
+# cd "$(dirname "$0")"
+# export base="$(pwd)"
+
 # installs all apps, aur apps and flatpak apps
 install_apps() {
-  # Apps installation
-  mapfile -t apps < <(grep -vE '^\s*#|^\s*$' "./apps/apps.lst")
-  install_packages "${apps[@]}"
 
-  # Yay app installation
-  mapfile -t yay_apps < <(grep -vE '^\s*#|^\s*$' "./apps/apps-aur.lst")
-  install_yay_packages "${yay_apps[@]}"
+  # Apps installation
+  remove_bashcomments_emptylines ./apps/apps.lst ./cache/apps.lst
+  readarray -t apps < ./cache/apps.lst
+  install_yay_packages "${apps[@]}"
 
   # Flatpak app installation
-  mapfile -t flathub_apps < <(grep -vE '^\s*#|^\s*$' "./apps/apps-flathub.lst")
+  remove_bashcomments_emptylines ./apps/apps-flathub.lst ./cache/apps-flathub.lst
+  readarray -t flathub_apps < ./cache/apps-flathub.lst
   install_flathub_packages "${flathub_apps[@]}"
 }
 
 # Install required pacman packages
-install_packages() {
+install_paman_packages() {
     toInstall=()
     for pkg; do
-        if [[ $(is_installed "${pkg}") == 0 ]]; then
+        if [[ $(is_installed_pacman "${pkg}") == 0 ]]; then
             echo ":: ${pkg} is already installed."
             continue
         fi
@@ -37,7 +43,7 @@ install_yay_packages() {
 
     # Install required yay packages
     for pkg; do
-        if [[ $(is_installed "${pkg}") == 0 ]]; then
+        if [[ $(is_installed_yay "${pkg}") == 0 ]]; then
             echo ":: ${pkg} is already installed."
             continue
         fi
@@ -75,7 +81,7 @@ install_flathub_packages() {
     fi
 }
 
-is_installed() {
+is_installed_pacman() {
     package="$1"
     check="$(sudo pacman -Qs --color always "${package}" | grep "local" | grep "${package} ")"
     if [ -n "${check}" ]; then
@@ -84,4 +90,15 @@ is_installed() {
     fi
     echo 1 #'1' means 'false' in Bash
     return #false
+}
+
+is_installed_yay() {
+    package="$1"
+    check="$(yay -Qq "${package}" 2>/dev/null)"
+    if [ -n "${check}" ]; then
+        echo 0  # true
+        return 0
+    fi
+    echo 1  # false
+    return 1
 }
