@@ -1,3 +1,5 @@
+# This script depends on `functions' and `environment-variables'.
+
 # This is NOT a script for execution, but for loading functions, so NOT need execution permission or shebang.
 # NOTE that you NOT need to `cd ..' because the `$0' is NOT this file, but the script file which will source this file.
 
@@ -22,6 +24,10 @@ install_packages() {
     $ask && showfun install_local_pkgbuild || metainstallflags="$metainstallflags --noconfirm"
     ask_execute install_local_pkgbuild "$i" "$metainstallflags"
   done
+
+  # These python packages are installed using uv, not pacman.
+  showfun install_python_packages
+  ask_execute install_python_packages
 }
 
 # yay -Bi is kinda hit or miss, instead cd into the relevant directory and manually source and install deps
@@ -88,4 +94,15 @@ install_additional_dependencies() {
       ask_execute yay -S --needed --noconfirm ${pkglist[*]}
     fi
   fi
+}
+
+install_python_packages() {
+  UV_NO_MODIFY_PATH=1
+  SHR_VIRTUAL_ENV=$XDG_STATE_HOME/ags/.venv
+  on_error_retry mkdir -p $(eval echo $SHR_VIRTUAL_ENV)
+  # we need python 3.12 https://github.com/python-pillow/Pillow/issues/8089
+  on_error_retry uv venv --prompt .venv $(eval echo $SHR_VIRTUAL_ENV) -p 3.12
+  on_error_retry source $(eval echo $SHR_VIRTUAL_ENV)/bin/activate
+  on_error_retry uv pip install -r python-packages/python-packages.txt
+  on_error_retry deactivate # We don't need the virtual environment anymore
 }

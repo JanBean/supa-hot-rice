@@ -86,10 +86,6 @@ install_packages
 
 install_apps
 
-# These python packages are installed using uv, not pacman.
-showfun install-python-packages
-ask_execute install-python-packages
-
 ################################ system config ################################
 
 base_system_config

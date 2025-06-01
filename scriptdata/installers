@@ -1,7 +1,3 @@
-# This file is provided for non-Arch(based) distros.
-# As for Arch Linux, we use local PKGBUILDs or AUR packages, which is the "right" way compared to copying files directly into /usr/local/* .
-# P.S. install-yay() should be kept for Arch(based) distros.
-
 # This script depends on `functions' .
 # This is NOT a script for execution, but for loading functions, so NOT need execution permission or shebang.
 # NOTE that you NOT need to `cd ..' because the `$0' is NOT this file, but the script file which will source this file.
@@ -10,7 +6,6 @@
 # cd "$(dirname "$0")"
 # export base="$(pwd)"
 
-# Only for Arch(based) distro.
 install-yay() {
   on_error_retry sudo pacman -S --needed --noconfirm base-devel
   on_error_retry git clone https://aur.archlinux.org/yay-bin.git /tmp/buildyay
@@ -22,20 +17,7 @@ install-yay() {
   rm -rf /tmp/buildyay
 }
 
-# Both for Arch(based) and other distros.
-install-python-packages (){
-  UV_NO_MODIFY_PATH=1
-  SHR_VIRTUAL_ENV=$XDG_STATE_HOME/ags/.venv
-  on_error_retry mkdir -p $(eval echo $SHR_VIRTUAL_ENV)
-  # we need python 3.12 https://github.com/python-pillow/Pillow/issues/8089
-  on_error_retry uv venv --prompt .venv $(eval echo $SHR_VIRTUAL_ENV) -p 3.12
-  on_error_retry source $(eval echo $SHR_VIRTUAL_ENV)/bin/activate
-  on_error_retry uv pip install -r scriptdata/requirements.txt
-  on_error_retry deactivate # We don't need the virtual environment anymore
-}
-
-# Only for Arch(based) distro.
-handle-deprecated-dependencies (){
+handle-deprecated-dependencies() {
   printf "\e[36m[$0]: Removing deprecated dependencies:\e[0m\n"
   # todo überlegen wie depc deps entfern
   # for i in shr-{} {hyprutils,hyprpicker}-git;do try sudo pacman --noconfirm -Rdd $i;done

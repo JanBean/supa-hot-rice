@@ -1,3 +1,4 @@
+# This script depends on `functions' .
 # This is NOT a script for execution, but for loading functions, so NOT need execution permission or shebang.
 # NOTE that you NOT need to `cd ..' because the `$0' is NOT this file, but the script file which will source this file.
 
@@ -20,7 +21,7 @@ install_apps() {
 }
 
 # Install required pacman packages
-install_paman_packages() {
+install_pacman_packages() {
     toInstall=()
     for pkg; do
         if [[ $(is_installed_pacman "${pkg}") == 0 ]]; then
