@@ -1,5 +1,5 @@
 #!/bin/bash
-# Online script for install dots-hyprland.
+# Online script for install supa-hot-rice.
 
 me="-->online-setup<--"
 remote_repo=JanBean/supa-hot-rice
@@ -30,7 +30,7 @@ function x() {
 command -v pacman || { echo "\"pacman\" not found. This script only work for Arch(-based) Linux distros. Aborting..."; exit 1 ; }
 
 if [ -z "$1" ]; then
-  path=~/.cache/dots-hyprland
+  path=~/.cache/supa-hot-rice
 else
   path="$1"
 fi
