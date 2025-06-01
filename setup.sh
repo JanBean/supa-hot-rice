@@ -2,7 +2,7 @@
 # Online script for install dots-hyprland.
 
 me="-->online-setup<--"
-remote_repo=JanBean/SupaHotRice
+remote_repo=JanBean/supa-hot-rice
 set -e
 
 function try { "$@" || sleep 0; }

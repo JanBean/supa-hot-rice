@@ -8,7 +8,7 @@
 - **Prerequisite**: Your system works. That's it. You don't have to reinstall your system!
 - **Automatic**, but guided and transparent, installation for Arch(-based) Linux:
    ```bash
-   bash <(curl -s "https://end-4.github.io/dots-hyprland-wiki/setup.sh")
+   bash <(curl -s "https://github.com/JanBean/supa-hot-rice/blob/master/setup.sh")
    ```
 - **Default keybinds**: Parts similar to Windows and GNOME. Hit Super+/ for a list.
   <details> 
