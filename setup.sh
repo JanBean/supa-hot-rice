@@ -39,11 +39,11 @@ echo "$me: Downloading repo to $path ..."
 x mkdir -p $path
 x cd $path
 if [ -z "$(ls -A)" ]; then
-  x git init -b main
+  x git init -b master
   x git remote add origin https://github.com/$remote_repo
 fi
 git remote get-url origin|grep -q $remote_repo || { echo "Dir \"$path\" is not empty, nor a git repo of $remote_repo. Aborting..."; exit 1 ; }
-x git pull origin main && git submodule update --init --recursive
+x git pull origin master && git submodule update --init --recursive
 echo "$me: Downloaded."
 echo "$me: Running \"install.sh\"."
 x install.sh || { echo "$me: Error occured when running \"install.sh\"."; exit 1 ; }
