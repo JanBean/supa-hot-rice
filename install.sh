@@ -118,9 +118,7 @@ install_theme() {
     fi
 }
 
-
 ask_execute install_theme
-
 
 # some foldes (eg. .local/bin) should be processed separately to avoid `--delete' for rsync,
 # since the files here come from different places, not only about one program.
