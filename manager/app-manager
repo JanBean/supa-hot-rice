@@ -12,12 +12,12 @@ install_apps() {
   # Apps installation
   remove_bashcomments_emptylines ./apps/apps.lst ./cache/apps.lst
   readarray -t apps < ./cache/apps.lst
-  install_yay_packages "${apps[@]}"
+  ask_execute install_yay_packages "${apps[@]}"
 
   # Flatpak app installation
   remove_bashcomments_emptylines ./apps/apps-flathub.lst ./cache/apps-flathub.lst
   readarray -t flathub_apps < ./cache/apps-flathub.lst
-  install_flathub_packages "${flathub_apps[@]}"
+  ask_execute install_flathub_packages "${flathub_apps[@]}"
 }
 
 # Install required pacman packages
@@ -35,7 +35,7 @@ install_pacman_packages() {
         return
     fi
     printf "Package not installed: %s\n" "${toInstall[@]}"
-    sudo pacman --noconfirm -S "${toInstall[@]}"
+    on_error_retry sudo pacman --noconfirm -S "${toInstall[@]}"
 }
 
 # Install required yay packages
@@ -55,7 +55,7 @@ install_yay_packages() {
         return
     fi
     printf "Yay package not installed: %s\n" "${toInstall[@]}"
-    yay -S --noconfirm "${toInstall[@]}"
+    on_error_retry yay -S --noconfirm "${toInstall[@]}"
 }
 
 # Install optional flatpak apps
@@ -77,7 +77,7 @@ install_flathub_packages() {
 
     if gum confirm "Install flatpak apps?"; then
         for pkg in "${toInstall[@]}"; do
-            flatpak install flathub -y "${pkg}"
+            on_error_retry flatpak install flathub -y "${pkg}"
         done
     fi
 }
