@@ -1,0 +1,3 @@
+- [ ] package manager fix
+- [ ] setup zu install.sh fix
+  - [ ]  ./install.sh und evtl. chmod

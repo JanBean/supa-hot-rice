@@ -14,10 +14,6 @@ install_packages() {
     [[ -d "$dir" && -f "$dir/PKGBUILD" ]] && metapkgs+=("$dir")
   done
 
-  # Conditionally include Bibata theme if not already installed
-  [[ -f /usr/share/icons/Bibata-Modern-Classic/index.theme ]] || \
-    metapkgs+=(./packages/shr-bibata-modern-classic-bin)
-
   # Install all collected packages
   for i in "${metapkgs[@]}"; do
     metainstallflags="--needed"
@@ -53,10 +49,6 @@ uninstall_packages() {
   for dir in ./packages/*; do
     [[ -d "$dir" && -f "$dir/PKGBUILD" ]] && metapkgs+=("$dir")
   done
-
-  # Conditionally include Bibata if installed
-  [[ -f /usr/share/icons/Bibata-Modern-Classic/index.theme ]] && \
-    metapkgs+=(./packages/shr-bibata-modern-classic-bin)
 
   # Uninstall all collected packages
   for i in "${metapkgs[@]}"; do
