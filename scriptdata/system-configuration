@@ -1,7 +1,8 @@
 
 # base system configurations
 base_system_config() {
-  # ask_execute sudo usermod -aG video,i2c,input "$(whoami)" # user groups
+  ask_execute sudo usermod -aG video,i2c,input "$(whoami)" # user groups
+  # ask_execute sudo usermod -aG i2c "$(whoami)" # evtl sudo pacman -Syu linux-headers
   ask_execute bash -c "echo i2c-dev | sudo tee /etc/modules-load.d/i2c-dev.conf" # load i2c-dev module at boot (sensors e.g. battery, brightness, touchpad)
   ask_execute sudo systemctl enable bluetooth --now
 
