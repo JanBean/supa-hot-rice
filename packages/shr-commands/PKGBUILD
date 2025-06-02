@@ -5,11 +5,12 @@ pkgdesc='Supa Hot Rice Terminal Commands'
 arch=(any)
 license=(None)
 depends=(
-    neovim      # text editor
-    wget        # file downloader
-    unzip       # Extract zip files
-    xclip    # Clipboard tool
-    stow     # Manage dotfiles
-    # gum
+    neovim          # text editor
+    wget            # file downloader
+    unzip           # Extract zip files
+    xclip           # Clipboard tool
+    stow            # Manage dotfiles
+    python-pywal16  # color sheme generation
+    gum             # shell shit
     # less
 )

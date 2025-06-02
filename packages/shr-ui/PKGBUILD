@@ -8,6 +8,7 @@ depends=(
     hyprpaper           # wallpaper tool
     hyprlock            # screen locker
     hypridle            # auto idler
+    hyprswitch          # alt tab
     wofi                # launcher for wayland compositors (e.g. sway)
     wtype               # xdotool type for wayland
     rofi-wayland        # window switcher, Application launcher and dmenu replacement.
@@ -16,4 +17,7 @@ depends=(
     swww                # wallpaper setter
     swaync              # notification daemon
     hyprcursor          # cursor theme
+
+    nwg-look            # theme changer for wayland
+    materia-gtk-theme   # modern flat gtk theme
 )

@@ -1,10 +1,10 @@
 pkgname=shr-utility
 pkgver=1.0
-pkgrel=1
+pkgrel=2
 pkgdesc='Supa Hot Rice Utility Tools'
 arch=(any)
 license=(None)
 depends=(
-	hyprshot                    # snipping tool
-    cliphist                    # clipboard
+    hyprshot
+	cliphist
 )

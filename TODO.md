@@ -3,6 +3,8 @@
 - [ ] nvidia drivers
 - [ ] dotfiles
 - [ ] install git in setup.sh if not installed
+- [ ] gum 
+- [ ] tabs oder white space apps-flathub.lst
 
 
 
