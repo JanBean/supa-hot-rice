@@ -1,0 +1,136 @@
+// Documentation:
+// https://github.com/in0ni/rofi-wayland/blob/wayland/doc/rofi-theme.5.markdown
+
+configuration {
+  modi:                   "drun";
+  display-drun:           "";
+  display-keys:           "";
+  display-window:         "";
+  drun-display-format:    "{name}";
+  font:                   "Hack, JetBrainsMonoNL Nerd Font Mono 12";
+  show-icons:             true;
+}
+
+@import "default.rasi"
+
+* {
+  bg:                     rgba(0,0,0,0.3);
+  bg-active:              rgba(0,0,0,0.5);
+  fg:                     @foreground;
+  radius:                 30px;
+}
+
+window {
+    width:                  35%;
+    height:                 45%;
+    border:                 3px solid;
+    border-radius:          @radius;
+    background-color:       @bg;
+}
+
+mainbox {
+    children:               [ inputbar, message, listview, mode-switcher ];
+    padding:                5px;
+    spacing:                20px;
+    background-color:       transparent;
+}
+
+inputbar {
+    children:               [ prompt, entry ];
+    border-radius:          @radius;
+    background-color:       @bg-active;
+}
+
+prompt, entry, element selected {
+    vertical-align:         0.5;
+}
+
+prompt {
+   font:                    "Material 30";
+   padding:                 1.5% 1%;
+   background-color:       transparent;
+}
+
+entry {
+    blink:                  false;
+    placeholder:            "Search...";
+    padding:                0% 0.5%;
+    placeholder-color:      grey;
+    background-color:       transparent;
+}
+
+listview {
+    layout:                 vertical;
+    lines:                  3;
+    columns:                1;
+    cycle:                  false;
+    background-color:       transparent;
+    margin:                 -5px;
+    spacing:                0px;
+    
+    fixed-height: 0;
+    border: 0px 0px 0px;
+    scrollbar: true;
+    padding: 5px 0px 0px;
+}
+
+element {
+    orientation:            horizontal;
+    padding:                10px;
+    spacing: 1em;
+    border-radius:          @radius;
+    margin:                 5px;
+    background-color:       transparent;
+}
+
+element-text, element-icon {
+    vertical-align:       0.5;
+    background-color:     inherit;
+}
+
+element-text { expand: true; }
+element-icon { size: 35px; }
+
+listview, element, element selected, element-text, element-icon {
+    cursor:                 pointer;
+}
+
+entry {
+    cursor:                 text;
+}
+
+element.normal.active, element.normal.normal,
+element.alternate.active, element.alternate.normal  {
+    background-color:       @bg;
+    text-color:             @fg;
+}
+
+element selected.active {
+    background-color:            @bg-active;
+    text-color:                  white;
+    border:                      2px solid;
+    border-color:                @selected;
+}
+
+element-text, element-icon {
+    background-color:       transparent;
+    text-color:             inherit;
+}
+
+mode-switcher {
+    background-color: transparent;
+}
+
+button {
+    border-radius:          @radius;
+    background-color:       @bg;
+    text-color:             @fg;
+    margin:                 2px;
+    padding:                2px;
+}
+
+button selected {
+    border-radius:          @radius;
+    background-color:       @bg-active;
+    text-color:             @fg;
+}
