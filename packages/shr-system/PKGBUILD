@@ -1,14 +1,13 @@
 pkgname=shr-system
 pkgver=1.0
 pkgrel=1
-pkgdesc='Supa Hot Rice System Dependencies'
+pkgdesc='Supa Hot Rice System Essentials and shit'
 arch=(any)
 license=(None)
 depends=(
     hyprpolkitagent             # sudo ui prompts
     xorg-xhost                  # ask for X session auth (timeshift e.g.)
     networkmanager              # networkmanager
-    cliphist                    # clipboard
 
     # bluetooth
     bluez                       # Bluetooth support

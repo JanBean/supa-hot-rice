@@ -1,7 +1,7 @@
 pkgname=shr-python
 pkgver=1.0
 pkgrel=1
-pkgdesc='Supa Hot Rice Python Dependencies'
+pkgdesc='Supa Hot Rice Python stuff'
 arch=(any)
 license=(None)
 depends=(

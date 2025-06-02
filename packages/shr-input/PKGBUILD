@@ -1,7 +1,7 @@
 pkgname=shr-input
 pkgver=1.0
 pkgrel=1
-pkgdesc='Supa Hot Rice input Dependencies'
+pkgdesc='Supa Hot Rice input shit'
 arch=(any)
 license=(None)
 depends=(

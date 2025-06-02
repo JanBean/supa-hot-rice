@@ -1,7 +1,7 @@
 pkgname=shr-gnome
 pkgver=1.0
 pkgrel=1
-pkgdesc='Supa Hot Rice GNOME Dependencies'
+pkgdesc='Supa Hot Rice GNOME shit'
 arch=(any)
 license=(None)
 depends=(

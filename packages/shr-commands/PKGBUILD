@@ -1,7 +1,7 @@
 pkgname=shr-commands
 pkgver=1.0
 pkgrel=1
-pkgdesc='Supa Hot Rice Terminal Commands Dependencies'
+pkgdesc='Supa Hot Rice Terminal Commands'
 arch=(any)
 license=(None)
 depends=(

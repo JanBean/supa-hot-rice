@@ -1,7 +1,7 @@
 pkgname=shr-ui
 pkgver=1.0
 pkgrel=1
-pkgdesc='Supa Hot Rice UI Dependencies'
+pkgdesc='Supa Hot Rice UI Shit'
 arch=(any)
 license=(None)
 depends=(
