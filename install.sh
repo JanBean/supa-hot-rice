@@ -98,27 +98,28 @@ printf "\e[36m[$0]: ############################### 5. Copying + Configuring ###
 ask_execute mkdir -p $XDG_BIN_HOME $XDG_CACHE_HOME $XDG_CONFIG_HOME $XDG_DATA_HOME
 
 install_theme() {
-    # setup wal with a default wallpaper
-    wal -i ./theme-dwarf/hypr/resources/ruan-jia.jpg
+    theme=$(gum choose "theme-dwarf" "asdfghj" "CANCEL")
+    if [ "$theme" == "CANCEL" ]; then
+        echo ":: installing theme canceled"
+    else
+      # setup wal with a default wallpaper
+      wal -i ./theme-dwarf/hypr/resources/ruan-jia.jpg
 
-    # stow gtk (symlink .files)
-    echo ":: create symlink for theme config"
-    rm -rf ~/.config/gtk-3.0/settings.ini
-    rm -rf ~/.config/hypr
-    rm -rf ~/.config/wofi
-    rm -rf ~/.config/kitty
-    stow $1
+      # stow gtk (symlink .files)
+      echo ":: create symlink for theme config"
+      rm -rf ~/.config/gtk-3.0/settings.ini
+      rm -rf ~/.config/hypr
+      rm -rf ~/.config/wofi
+      rm -rf ~/.config/kitty
+      stow "$theme"
 
-    # reload hyprland
-    hyprctl reload
+      # reload hyprland
+      hyprctl reload
+    fi
 }
 
-theme=$(gum choose "theme-dwarf" "asdfghj" "CANCEL")
-if [ "$theme" == "CANCEL" ]; then
-    echo ":: installing theme canceled"
-else
-  on_error_retry install_theme "$theme"
-fi
+
+ask_execute install_theme
 
 
 # some foldes (eg. .local/bin) should be processed separately to avoid `--delete' for rsync,
