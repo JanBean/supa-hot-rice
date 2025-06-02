@@ -1,6 +1,6 @@
 pkgname=shr-zsh
 pkgver=1.0
-pkgrel=1
+pkgrel=2
 pkgdesc='Supa Hot Rice ZSH shit shell'
 arch=(any)
 license=(None)

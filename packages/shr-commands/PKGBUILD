@@ -1,6 +1,6 @@
 pkgname=shr-commands
 pkgver=1.0
-pkgrel=1
+pkgrel=2
 pkgdesc='Supa Hot Rice Terminal Commands'
 arch=(any)
 license=(None)

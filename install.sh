@@ -99,7 +99,7 @@ ask_execute mkdir -p $XDG_BIN_HOME $XDG_CACHE_HOME $XDG_CONFIG_HOME $XDG_DATA_HO
 
 install_theme() {
     # setup wal with a default wallpaper
-    wal -i ./theme/hypr/resources/ruan-jia.jpg
+    wal -i ./theme-dwarf/hypr/resources/ruan-jia.jpg
 
     # stow gtk (symlink .files)
     echo ":: create symlink for theme config"
@@ -113,11 +113,11 @@ install_theme() {
     hyprctl reload
 }
 
-theme=$(gum choose "theme-dwarf" "rolling-release" "CANCEL")
+theme=$(gum choose "theme-dwarf" "asdfghj" "CANCEL")
 if [ "$theme" == "CANCEL" ]; then
     echo ":: installing theme canceled"
 else
-  install_theme theme
+  on_error_retry install_theme "$theme"
 fi
 
 

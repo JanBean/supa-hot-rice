@@ -1,6 +1,6 @@
 pkgname=shr-ui
 pkgver=1.0
-pkgrel=1
+pkgrel=2
 pkgdesc='Supa Hot Rice UI Shit'
 arch=(any)
 license=(None)
