@@ -98,12 +98,12 @@ printf "\e[36m[$0]: ############################### 5. Copying + Configuring ###
 ask_execute mkdir -p $XDG_BIN_HOME $XDG_CACHE_HOME $XDG_CONFIG_HOME $XDG_DATA_HOME
 
 install_theme() {
-    theme=$(gum choose "theme-dwarf" "asdfghj" "CANCEL")
+    theme=$(gum choose "dwarf_theme" "asdfghj" "CANCEL")
     if [ "$theme" == "CANCEL" ]; then
         echo ":: installing theme canceled"
     else
       # setup wal with a default wallpaper
-      wal -i ./theme-dwarf/hypr/resources/ruan-jia.jpg
+      wal -i ./dwarf_theme/hypr/resources/ruan-jia.jpg
 
       # stow gtk (symlink .files)
       echo ":: create symlink for theme config"
