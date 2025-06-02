@@ -1,0 +1,11 @@
+pkgname=shr-zsh
+pkgver=1.0
+pkgrel=1
+pkgdesc='Supa Hot Rice ZSH Dependencies'
+arch=(any)
+license=(None)
+depends=(
+    zsh                     # shell
+    zsh-completions         # tab completion for zsh
+    fastfetch               # system info tool
+)

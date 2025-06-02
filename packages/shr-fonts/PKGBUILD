@@ -1,0 +1,10 @@
+pkgname=shr-fonts
+pkgver=1.0
+pkgrel=1
+pkgdesc='Supa Hot Rice Fonts'
+arch=(any)
+license=(None)
+depends=(
+    noto-fonts-emoji            # Emoji font for color emojis
+    ttf-jetbrains-mono-nerd     # JetBrains Mono font with icons
+)

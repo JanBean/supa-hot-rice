@@ -5,7 +5,8 @@ pkgdesc='Supa Hot Rice GNOME Dependencies'
 arch=(any)
 license=(None)
 depends=(
-	polkit-gnome
-	gnome-keyring
-	gnome-control-center
+    polkit-gnome                # Auth pop-ups
+    gnome-keyring               # Password manager
+    gnome-control-center        # System settings
+    gnome-font-viewer           # View/install fonts
 )

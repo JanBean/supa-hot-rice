@@ -1,0 +1,19 @@
+pkgname=shr-ui
+pkgver=1.0
+pkgrel=1
+pkgdesc='Supa Hot Rice UI Dependencies'
+arch=(any)
+license=(None)
+depends=(
+    hyprpaper           # wallpaper tool
+    hyprlock            # screen locker
+    hypridle            # auto idler
+    wofi                # launcher for wayland compositors (e.g. sway)
+    wtype               # xdotool type for wayland
+    rofi-wayland        # window switcher, Application launcher and dmenu replacement.
+    rofimoji            # rofi emoji picker
+    waybar              # status bar
+    swww                # wallpaper setter
+    swaync              # notification daemon
+    hyprcursor          # cursor theme
+)

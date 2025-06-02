@@ -5,5 +5,5 @@ pkgdesc='Supa Hot Rice Python Dependencies'
 arch=(any)
 license=(None)
 depends=(
-    uv # fast Python package and project manager, weil pp pp ppp pip richtig ungerne
+    uv              # fast Python package and project manager, weil pp pp ppp pip richtig ungerne
 )

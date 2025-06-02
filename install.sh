@@ -86,6 +86,8 @@ install_packages
 
 install_apps
 
+ask_execute fc-cache -fv # scan font directories and rebuild font cache
+
 ################################ system config ################################
 
 base_system_config

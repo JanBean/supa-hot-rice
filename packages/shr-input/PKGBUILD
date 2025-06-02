@@ -5,5 +5,5 @@ pkgdesc='Supa Hot Rice input Dependencies'
 arch=(any)
 license=(None)
 depends=(
-    xpadneo-dkms # Xbox Controller
+    xpadneo-dkms                # Xbox Controller
 )

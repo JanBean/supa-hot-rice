@@ -1,0 +1,15 @@
+pkgname=shr-commands
+pkgver=1.0
+pkgrel=1
+pkgdesc='Supa Hot Rice Terminal Commands Dependencies'
+arch=(any)
+license=(None)
+depends=(
+    neovim      # text editor
+    wget        # file downloader
+    unzip       # Extract zip files
+    xclip    # Clipboard tool
+    stow     # Manage dotfiles
+    # gum
+    # less
+)
