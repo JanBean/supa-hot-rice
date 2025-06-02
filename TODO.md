@@ -1,0 +1,2 @@
+- [ ] in system config i2c evtl zum laufen bringen
+- [ ] davinci resolve error

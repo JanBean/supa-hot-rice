@@ -1,9 +1,9 @@
-pkgname=shr-utility
+pkgname=shr-python
 pkgver=1.0
 pkgrel=1
-pkgdesc='Supa Hot Rice Utility Dependencies'
+pkgdesc='Supa Hot Rice Python Dependencies'
 arch=(any)
 license=(None)
 depends=(
-	hyprshot # snipping tool
+    uv # fast Python package and project manager, weil pp pp ppp pip richtig ungerne
 )

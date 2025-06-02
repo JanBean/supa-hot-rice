@@ -89,12 +89,15 @@ install_additional_dependencies() {
 }
 
 install_python_packages() {
+  remove_bashcomments_emptylines python-packages/python-packages.in ./cache/python-packages.in
+
   UV_NO_MODIFY_PATH=1
   SHR_VIRTUAL_ENV=$XDG_STATE_HOME/ags/.venv
   on_error_retry mkdir -p $(eval echo $SHR_VIRTUAL_ENV)
   # we need python 3.12 https://github.com/python-pillow/Pillow/issues/8089
   on_error_retry uv venv --prompt .venv $(eval echo $SHR_VIRTUAL_ENV) -p 3.12
   on_error_retry source $(eval echo $SHR_VIRTUAL_ENV)/bin/activate
+  on_error_retry uv pip compile ./cache/python-packages.in -o python-packages/python-packages.txt # evtl python-packages.txt vorher mit mkdir erstellen
   on_error_retry uv pip install -r python-packages/python-packages.txt
   on_error_retry deactivate # We don't need the virtual environment anymore
 }
