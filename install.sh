@@ -47,14 +47,11 @@ ask_confirm_exec() {
 }
 
 step_system_update() {
-  printf "\e[36m[$0]: ################################## 1. Update System #############################################\n\e[0m"
   ask_execute sudo pacman -Syu
 }
 
 
 step_set_up_installers() {
-  printf "\e[36m[$0]: ############################## 2. Set Up Installers (yay, ...) ######################################\n\e[0m"
-
   # isntall yay, because paru does not support cleanbuild. Also see https://wiki.hyprland.org/FAQ/#how-do-i-update
   if ! command -v yay >/dev/null 2>&1;then
     echo -e "\e[33m[$0]: \"yay\" not found.\e[0m"
@@ -64,8 +61,6 @@ step_set_up_installers() {
 }
 
 step_install_packages() {
-  printf "\e[36m[$0]: ######################### 3. Install packages ################################\n\e[0m"
-
   showfun handle-deprecated-dependencies
   ask_execute handle-deprecated-dependencies
 
@@ -73,22 +68,15 @@ step_install_packages() {
 }
 
 step_install_apps() {
-  printf "\e[36m[$0]: ########################## 4. Install Apps ################################\n\e[0m"
-
   install_apps
-
   ask_execute fc-cache -fv # scan font directories and rebuild font cache
 }
 
 step_setup_services() {
-  printf "\e[36m[$0]: ######################### 5. setup user groups/services ##############################\n\e[0m"
-
   base_system_config
 }
 
 step_symlink_dotfiles() {
-  printf "\e[36m[$0]: ######################### 6. Symlinking + Configuring Dotfiles #########################\e[0m\n"
-
   # In case some folders do not exists
   ask_execute mkdir -p $XDG_BIN_HOME $XDG_CACHE_HOME $XDG_CONFIG_HOME $XDG_DATA_HOME
 
@@ -129,7 +117,6 @@ step_symlink_dotfiles() {
 }
 
 step_uninstall_gum() {
-  printf "\e[36m[$0]: ######################### 6. Uninstalling gum (shell script utility) ####################################\e[0m\n"
   sudo pacman -Rns gum
 }
 
@@ -152,8 +139,11 @@ esac
 set -e # exit if non zero exit status
 
 
-# install gum for fancy dialogues
-on_error_retry sudo pacman --noconfirm -S gum
+# Check if gum is installed, install if not
+if ! command -v gum >/dev/null; then
+  echo -e "\e[34m$me: Gum is not installed. Installing for fancy installation....\e[0m"
+  on_error_retry sudo pacman -Sy --noconfirm gum
+fi
 
 ############################################ Run Steps ############################################
 
@@ -191,7 +181,7 @@ selected_steps=$(gum choose --no-limit \
 # Run the selected steps
 mapfile -t steps <<< "$selected_steps"
 for step_label in "${steps[@]}"; do
-  echo -e "\n Running step: \e[1m$step_label\e[0m"
+  echo -e "\n\e[36m ############################################ \e[1m$step_label\e[36m ########################################\e[0m\n"
   step_func="${STEP_FUNCTIONS[$step_label]}"
   if [[ -n "$step_func" ]]; then
     on_error_retry $step_func
