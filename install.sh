@@ -92,44 +92,45 @@ printf "\e[36m[$0]: ############################ 4. setup user groups/services #
 
 base_system_config
 
-printf "\e[36m[$0]: ############################### 5. Copying + Configuring ####################################\e[0m\n"
+printf "\e[36m[$0]: ############################### 5. Symlinking + Configuring Dotfiles ####################################\e[0m\n"
 
 # In case some folders do not exists
 ask_execute mkdir -p $XDG_BIN_HOME $XDG_CACHE_HOME $XDG_CONFIG_HOME $XDG_DATA_HOME
 
-install_theme() {
-    theme=$(gum choose "dotfiles/dwarf_theme" "asdfghj" "CANCEL")
-    if [ "$theme" == "CANCEL" ]; then
-        echo ":: installing theme canceled"
-    else
-      # setup wal with a default wallpaper
-      wal -i ./dotfiles/dwarf_theme/.config/hypr/resources/ruan-jia.jpg
+DOTFILES_DIR="./dotfiles"
+TARGET="$HOME"
 
-      # stow gtk (symlink .files)
-      echo ":: create symlink for theme config"
-      rm -rf ~/.config/gtk-3.0/settings.ini
-      rm -rf ~/.config/hypr
-      rm -rf ~/.config/wofi
-      rm -rf ~/.config/kitty
-      stow "$theme" -d ./dotfiles -t ~
+# Get all subdirectories (i.e., stow packages)
+mapfile -t stow_dirs < <(find "$DOTFILES_DIR" -mindepth 1 -maxdepth 1 -type d -printf "%f\n")
 
-      # reload hyprland
-      hyprctl reload
-    fi
-}
+# Prompt user to choose
+selected=$(gum choose --no-limit "${stow_dirs[@]}" "CANCEL")
+if [[ "$selected" == "CANCEL" || -z "$selected" ]]; then
+    echo ":: Loading dotfiles cancelled."
+else
+  # Convert selection to an array if multiple were selected
+  IFS=$'\n' read -rd '' -a choices <<<"$selected"
 
-ask_execute install_theme
+  # Loop through selected dirs
+  for dir in "${choices[@]}"; do
+      echo ":: Preparing to stow '$dir'"
 
-symlink_zsh() {
-      # stow zsh (symlink .files)
-    echo ":: creating symlink for zsh config:"
+      # Preview stow output and parse file paths
+      while IFS= read -r line; do
+          # stow -nv outputs something like: "LINK: .config/foo -> /home/user/.config/foo"
+          # We extract the target path from the output
+          target_path=$(echo "$line" | awk -F " -> " '{print $2}')
+          if [[ -n "$target_path" ]]; then
+              echo ":: Removing existing file: $target_path"
+              rm -rf "$target_path"
+          fi
+      done < <(stow -nv "$dir" -d "$DOTFILES_DIR" -t "$TARGET")
 
-    rm -rf ~/.zshrc
-
-    stow zsh -d ./dotfiles -t ~
-}
-
-ask_execute symlink_zsh
+      # Actually stow it now
+      stow "$dir" -d "$DOTFILES_DIR" -t "$TARGET"
+      echo ":: '$dir' stowed successfully"
+  done
+fi
 
 # Prevent hyprland from not fully loaded
 sleep 1
