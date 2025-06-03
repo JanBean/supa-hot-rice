@@ -103,7 +103,7 @@ install_theme() {
         echo ":: installing theme canceled"
     else
       # setup wal with a default wallpaper
-      wal -i ./dwarf_theme/hypr/resources/ruan-jia.jpg
+      wal -i ./dwarf_theme/.config/hypr/resources/ruan-jia.jpg
 
       # stow gtk (symlink .files)
       echo ":: create symlink for theme config"

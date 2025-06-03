@@ -13,6 +13,7 @@ post_install() {
 
     # stow zsh (symlink .files)
     echo ":: create symlink for zsh config"
+    ls -a
     rm -rf ~/.zshrc
     stow zsh -t ~
 
