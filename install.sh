@@ -61,83 +61,135 @@ esac
 
 set -e # exit if non zero exit status
 
-printf "\e[36m[$0]: ################################## 1. System update #############################################\n\e[0m"
+# install gum for fancy dialogues
+on_error_retry sudo pacman -S gum
 
-case $SKIP_SYSUPDATE in
-  true) sleep 0;;
-  *) ask_execute sudo pacman -Syu;;
-esac
+# Map step names to functions
+declare -A STEP_FUNCTIONS
 
-printf "\e[36m[$0]: ############################## 2. Download installers ######################################\n\e[0m"
+STEP_FUNCTIONS["Update System"]="step_system_update"
+STEP_FUNCTIONS["Download Installers (yay, ...)"]="step_download_installers"
+STEP_FUNCTIONS["Install Packages"]="step_install_packages"
+STEP_FUNCTIONS["Install Apps"]="step_install_apps"
+STEP_FUNCTIONS["Setup Groups/Services"]="step_setup_services"
+STEP_FUNCTIONS["Symlink + Configure Dotfiles"]="step_symlink_dotfiles"
+STEP_FUNCTIONS["Uninstall Gum"]="step_uninstall_gum"
 
-# isntall yay, because paru does not support cleanbuild. Also see https://wiki.hyprland.org/FAQ/#how-do-i-update
-if ! command -v yay >/dev/null 2>&1;then
-  echo -e "\e[33m[$0]: \"yay\" not found.\e[0m"
-  showfun install-yay
-  ask_execute install-yay
-fi
+# --- Step Selection Prompt ---
+echo -e "\n\e[1;36mSelect which steps to run:\e[0m"
+selected_steps=$(gum choose --no-limit --cursor-prefix "[x] " --selected-prefix "[✓] " --unselected-prefix "[ ] " \
+  --selected="Update System" \
+  --selected="Download Installers (yay, ...)" \
+  --selected="Install Packages" \
+  --selected="Install Apps" \
+  --selected="Setup Groups/Services" \
+  --selected="Symlink + Configure Dotfiles" \
+  "Uninstall Gum")
 
-printf "\e[36m[$0]: ########################## 3. Get packages, install apps ################################\n\e[0m"
+# Run the selected steps
+while IFS= read -r step_label; do
+  step_func="${STEP_FUNCTIONS[$step_label]}"
+  if [[ -n "$step_func" ]]; then
+    $step_func
+  else
+    echo "⚠️ Unknown step: $step_label"
+  fi
+done <<< "$selected_steps"
 
-showfun handle-deprecated-dependencies
-ask_execute handle-deprecated-dependencies
+step_system_update() {
+  printf "\e[36m[$0]: ################################## 1. System update #############################################\n\e[0m"
+  ask_execute sudo pacman -Syu
+}
 
-install_packages
 
-install_apps
+step_download_installers() {
+  printf "\e[36m[$0]: ############################## 2. Download installers (yay, ...) ######################################\n\e[0m"
 
-ask_execute fc-cache -fv # scan font directories and rebuild font cache
+  # isntall yay, because paru does not support cleanbuild. Also see https://wiki.hyprland.org/FAQ/#how-do-i-update
+  if ! command -v yay >/dev/null 2>&1;then
+    echo -e "\e[33m[$0]: \"yay\" not found.\e[0m"
+    showfun install-yay
+    ask_execute install-yay
+  fi
+}
 
-printf "\e[36m[$0]: ############################ 4. setup user groups/services ##############################\n\e[0m"
+step_install_packages() {
+  printf "\e[36m[$0]: ######################### 3. Install packages ################################\n\e[0m"
 
-base_system_config
+  showfun handle-deprecated-dependencies
+  ask_execute handle-deprecated-dependencies
 
-printf "\e[36m[$0]: ############################### 5. Symlinking + Configuring Dotfiles ####################################\e[0m\n"
+  install_packages
+}
 
-# In case some folders do not exists
-ask_execute mkdir -p $XDG_BIN_HOME $XDG_CACHE_HOME $XDG_CONFIG_HOME $XDG_DATA_HOME
+step_install_apps() {
+  printf "\e[36m[$0]: ########################## 4. Install Apps ################################\n\e[0m"
 
-DOTFILES_DIR="./dotfiles"
-TARGET="$HOME"
+  install_apps
 
-# Get all subdirectories (i.e., stow packages)
-mapfile -t stow_dirs < <(find "$DOTFILES_DIR" -mindepth 1 -maxdepth 1 -type d -printf "%f\n")
+  ask_execute fc-cache -fv # scan font directories and rebuild font cache
+}
 
-# Prompt user to choose
-selected=$(gum choose --no-limit "${stow_dirs[@]}" "CANCEL")
-if [[ "$selected" == "CANCEL" || -z "$selected" ]]; then
-    echo ":: Loading dotfiles cancelled."
-else
-  # Convert selection to an array if multiple were selected
-  IFS=$'\n' read -rd '' -a choices <<<"$selected"
+step_setup_services() {
+  printf "\e[36m[$0]: ######################### 5. setup user groups/services ##############################\n\e[0m"
 
-  # Loop through selected dirs
-  for dir in "${choices[@]}"; do
-      echo ":: Preparing to stow '$dir'"
+  base_system_config
+}
 
-      # Preview stow output and parse file paths
-      while IFS= read -r line; do
-          # stow -nv outputs something like: "LINK: .config/foo -> /home/user/.config/foo"
-          # We extract the target path from the output
-          target_path=$(echo "$line" | awk -F " -> " '{print $2}')
-          if [[ -n "$target_path" ]]; then
-              echo ":: Removing existing file: $target_path"
-              rm -rf "$target_path"
-          fi
-      done < <(stow -nv "$dir" -d "$DOTFILES_DIR" -t "$TARGET")
+step_symlink_dotfiles() {
+  printf "\e[36m[$0]: ######################### 6. Symlinking + Configuring Dotfiles #########################\e[0m\n"
 
-      # Actually stow it now
-      stow "$dir" -d "$DOTFILES_DIR" -t "$TARGET"
-      echo ":: '$dir' stowed successfully"
-  done
-fi
+  # In case some folders do not exists
+  ask_execute mkdir -p $XDG_BIN_HOME $XDG_CACHE_HOME $XDG_CONFIG_HOME $XDG_DATA_HOME
+
+  DOTFILES_DIR="./dotfiles"
+  TARGET="$HOME"
+
+  # Get all subdirectories (i.e., stow packages)
+  mapfile -t stow_dirs < <(find "$DOTFILES_DIR" -mindepth 1 -maxdepth 1 -type d -printf "%f\n")
+
+  # Prompt user to choose
+  selected_dotfiles=$(gum choose --no-limit "${stow_dirs[@]}" "CANCEL")
+  if [[ "$selected_dotfiles" == "CANCEL" || -z "$selected_dotfiles" ]]; then
+      echo ":: Loading dotfiles cancelled."
+  else
+    # Convert selection to an array if multiple were selected
+    IFS=$'\n' read -rd '' -a choices <<<"$selected_dotfiles"
+
+    # Loop through selected dirs
+    for dir in "${choices[@]}"; do
+        echo ":: Preparing to stow '$dir'"
+
+        # Preview stow output and parse file paths
+        while IFS= read -r line; do
+            # stow -nv outputs something like: "LINK: .config/foo -> /home/user/.config/foo"
+            # We extract the target path from the output
+            target_path=$(echo "$line" | awk -F " -> " '{print $2}')
+            if [[ -n "$target_path" ]]; then
+                echo ":: Removing existing file: $target_path"
+                rm -rf "$target_path"
+            fi
+        done < <(stow -nv "$dir" -d "$DOTFILES_DIR" -t "$TARGET")
+
+        # Actually stow it now
+        stow "$dir" -d "$DOTFILES_DIR" -t "$TARGET"
+        echo ":: '$dir' stowed successfully"
+    done
+  fi
+}
+
+step_uninstall_gum() {
+  printf "\e[36m[$0]: ######################### 6. Uninstalling gum (shell script utility) ####################################\e[0m\n"
+  sudo pacman -Rns gum
+}
+
+
+printf "\e[36m[$0]: ######################### Finishing ####################################\e[0m\n"
 
 # Prevent hyprland from not fully loaded
 sleep 1
 
 try hyprctl reload
-
-################################# finish ################################
 
 printf "\e[36mPress \e[30m\e[46m Super+/ \e[0m\e[36m for a list of keybinds\e[0m\n"
 printf "\n"
@@ -146,8 +198,7 @@ if [[ -z "${SHR_VIRTUAL_ENV}" ]]; then
   printf "\n\e[31m[$0]: \!! Important \!! : Please ensure environment variable \e[0m \$SHR_VIRTUAL_ENV \e[31m is set to proper value (by default \"~/.local/state/ags/.venv\"), or AGS config will not work. We have already provided this configuration in ~/.config/hypr/hyprland/env.conf, but you need to ensure it is included in hyprland.conf, and also a restart is needed for applying it.\e[0m\n"
 fi
 
-##################################### print warn files #####################
-
+# warn from conflicting files
 warn_files=()
 warn_files_tests=() # append for deprecation messages
 for i in ${warn_files_tests[@]}; do

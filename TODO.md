@@ -5,5 +5,5 @@
 - [ ] tabs oder white space apps-flathub.lst
 - [ ] firewall
 - [ ] yazi
-- [ ] zsh stow fix
 - [ ] background img fix
+- [ ] skip steps in script
