@@ -98,12 +98,12 @@ printf "\e[36m[$0]: ############################### 5. Copying + Configuring ###
 ask_execute mkdir -p $XDG_BIN_HOME $XDG_CACHE_HOME $XDG_CONFIG_HOME $XDG_DATA_HOME
 
 install_theme() {
-    theme=$(gum choose "dwarf_theme" "asdfghj" "CANCEL")
+    theme=$(gum choose "dotfiles/dwarf_theme" "asdfghj" "CANCEL")
     if [ "$theme" == "CANCEL" ]; then
         echo ":: installing theme canceled"
     else
       # setup wal with a default wallpaper
-      wal -i ./dwarf_theme/.config/hypr/resources/ruan-jia.jpg
+      wal -i ./dotfiles/dwarf_theme/.config/hypr/resources/ruan-jia.jpg
 
       # stow gtk (symlink .files)
       echo ":: create symlink for theme config"
@@ -111,7 +111,7 @@ install_theme() {
       rm -rf ~/.config/hypr
       rm -rf ~/.config/wofi
       rm -rf ~/.config/kitty
-      stow "$theme" -t ~
+      stow "$theme" -d ./dotfiles -t ~
 
       # reload hyprland
       hyprctl reload
@@ -119,6 +119,17 @@ install_theme() {
 }
 
 ask_execute install_theme
+
+symlink_zsh() {
+      # stow zsh (symlink .files)
+    echo ":: creating symlink for zsh config:"
+
+    rm -rf ~/.zshrc
+
+    stow zsh -d ./dotfiles -t ~
+}
+
+ask_execute symlink_zsh
 
 # Prevent hyprland from not fully loaded
 sleep 1
