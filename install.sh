@@ -9,14 +9,6 @@ source ./scriptdata/system-configuration
 source ./manager/package-manager
 source ./manager/app-manager
 
-################################### Prompt user choices ##############################
-
-if ! command -v pacman >/dev/null 2>&1; then 
-  printf "\e[31m[$0]: pacman not found, it seems that the system is not ArchLinux or Arch-based distros. Aborting...\e[0m\n"
-  exit 1
-fi
-
-prevent_sudo_or_root
 
 start_task() {
     printf "\e[34m[$0]: Wassssssuuuuuuuuuup!!!?:\n"
@@ -54,65 +46,14 @@ ask_confirm_exec() {
   esac
 }
 
-case $ask in # prevents repeated start
-  false)sleep 0 ;;
-  *)start_task ;;
-esac
-
-set -e # exit if non zero exit status
-
-# install gum for fancy dialogues
-on_error_retry sudo pacman --noconfirm -S gum
-
-# Map step names to functions
-declare -A STEP_FUNCTIONS
-
-STEP_FUNCTIONS["Update System"]="step_system_update"
-STEP_FUNCTIONS["Download Installers (yay, ...)"]="step_download_installers"
-STEP_FUNCTIONS["Install Packages"]="step_install_packages"
-STEP_FUNCTIONS["Install Apps"]="step_install_apps"
-STEP_FUNCTIONS["Setup Groups/Services"]="step_setup_services"
-STEP_FUNCTIONS["Symlink + Configure Dotfiles"]="step_symlink_dotfiles"
-STEP_FUNCTIONS["Uninstall Gum"]="step_uninstall_gum"
-
-# --- Step Selection Prompt ---
-echo -e "\n\e[1;36mSelect which steps to run:\e[0m"
-selected_steps=$(gum choose --no-limit \
-  --cursor-prefix "[x] " \
-  --selected-prefix "[✓] " \
-  --unselected-prefix "[ ] " \
-  --selected "Update System" \
-  --selected "Download Installers (yay, ...)" \
-  --selected "Install Packages" \
-  --selected "Install Apps" \
-  --selected "Setup Groups/Services" \
-  --selected "Symlink + Configure Dotfiles" \
-  "Update System" \
-  "Download Installers (yay, ...)" \
-  "Install Packages" \
-  "Install Apps" \
-  "Setup Groups/Services" \
-  "Symlink + Configure Dotfiles" \
-  "Uninstall Gum")
-
-# Run the selected steps
-while IFS= read -r step_label; do
-  step_func="${STEP_FUNCTIONS[$step_label]}"
-  if [[ -n "$step_func" ]]; then
-    $step_func
-  else
-    echo "⚠️ Unknown step: $step_label"
-  fi
-done <<< "$selected_steps"
-
 step_system_update() {
-  printf "\e[36m[$0]: ################################## 1. System update #############################################\n\e[0m"
+  printf "\e[36m[$0]: ################################## 1. Update System #############################################\n\e[0m"
   ask_execute sudo pacman -Syu
 }
 
 
-step_download_installers() {
-  printf "\e[36m[$0]: ############################## 2. Download installers (yay, ...) ######################################\n\e[0m"
+step_set_up_installers() {
+  printf "\e[36m[$0]: ############################## 2. Set Up Installers (yay, ...) ######################################\n\e[0m"
 
   # isntall yay, because paru does not support cleanbuild. Also see https://wiki.hyprland.org/FAQ/#how-do-i-update
   if ! command -v yay >/dev/null 2>&1;then
@@ -192,6 +133,70 @@ step_uninstall_gum() {
   sudo pacman -Rns gum
 }
 
+########################################## SCRIPT START ###############################################
+
+if ! command -v pacman >/dev/null 2>&1; then
+  printf "\e[31m[$0]: pacman not found, it seems that the system is not ArchLinux or Arch-based distros. Aborting...\e[0m\n"
+  exit 1
+fi
+
+prevent_sudo_or_root
+
+
+# Prompt user choices
+case $ask in # prevents repeated start
+  false)sleep 0 ;;
+  *)start_task ;;
+esac
+
+set -e # exit if non zero exit status
+
+
+# install gum for fancy dialogues
+on_error_retry sudo pacman --noconfirm -S gum
+
+############################################ Run Steps ############################################
+
+# Map step names to functions
+declare -A STEP_FUNCTIONS
+
+STEP_FUNCTIONS["Update System"]="step_system_update"
+STEP_FUNCTIONS["Set Up Installers"]="step_set_up_installers"
+STEP_FUNCTIONS["Install Packages"]="step_install_packages"
+STEP_FUNCTIONS["Install Apps"]="step_install_apps"
+STEP_FUNCTIONS["Setup Groups/Services"]="step_setup_services"
+STEP_FUNCTIONS["Symlink + Configure Dotfiles"]="step_symlink_dotfiles"
+STEP_FUNCTIONS["Uninstall Gum"]="step_uninstall_gum"
+
+# --- Step Selection Prompt ---
+echo -e "\n\e[1;36mSelect which steps to run:\e[0m"
+selected_steps=$(gum choose --no-limit \
+  --cursor-prefix "[x] " \
+  --selected-prefix "[✓] " \
+  --unselected-prefix "[ ] " \
+  --selected "Update System" \
+  --selected "Set Up Installers" \
+  --selected "Install Packages" \
+  --selected "Install Apps" \
+  --selected "Setup Groups/Services" \
+  --selected "Symlink + Configure Dotfiles" \
+  "Update System" \
+  "Set Up Installers" \
+  "Install Packages" \
+  "Install Apps" \
+  "Setup Groups/Services" \
+  "Symlink + Configure Dotfiles" \
+  "Uninstall Gum")
+
+# Run the selected steps
+while IFS= read -r step_label; do
+  step_func="${STEP_FUNCTIONS[$step_label]}"
+  if [[ -n "$step_func" ]]; then
+    $step_func
+  else
+    echo "⚠️ Unknown step: $step_label"
+  fi
+done <<< "$selected_steps"
 
 printf "\e[36m[$0]: ######################### Finishing ####################################\e[0m\n"
 
