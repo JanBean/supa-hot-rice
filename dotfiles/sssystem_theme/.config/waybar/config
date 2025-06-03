@@ -1,0 +1,158 @@
+/* ---- 💫 https://github.com/JaKooLit 💫 ---- */
+// Sleek
+
+{
+    "include": "~/.config/waybar/modules",
+    "layer": "top",
+    "position": "top",
+    "height": 12,
+    "margin-left": -2,
+    "margin-right": -2,
+    "margin-top": -2,
+        
+    "modules-left": [
+        "clock",
+        "date",
+        "custom/separator#blank",
+        "tray",
+        "custom/separator#blank",
+        "hyprland/window"
+    ],
+    
+    "modules-center": [		
+        "hyprland/workspaces"
+    ],
+       
+    "image#gradient": {
+        "path": "~/.config/hypr/resources/gradient.png",
+        "size": 32,
+    },
+            
+    "modules-right": [
+        "custom/pacman",
+        "custom/separator#blank",
+        "mpris",
+        "custom/separator#blank",
+        "pulseaudio",
+        "custom/separator#blank",
+        "network",
+        "custom/separator#blank",
+        "custom/notification",
+        "custom/separator#blank", 
+        "bluetooth",
+        "custom/separator#blank",
+        "custom/power",
+    ],
+    
+    
+    // Additional format / customize modules
+
+    "hyprland/workspaces": {
+        "show-special": true,
+    },
+    
+    "tray": {
+        "spacing": 10,
+        "icon-size": 16,
+        "show-passive-items": true
+    },
+
+    "hyprland/window": {
+	    "format": "{initialTitle}",
+        "icon":true,
+        "icon-size":15,
+    },
+    
+    "pulseaudio": {
+        "orientation": "horizontal",
+        // actually using pipewire but waybar only has pulseaudio :(
+        "on-click": "flatpak run com.saivert.pwvucontrol"
+    },
+
+    "mpris": {
+        "interval": 1,
+        "format": "{player_icon} <i>{dynamic}</i>",
+        "format-paused": "{status_icon}",
+        "on-click-middle": "playerctl play-pause",
+        "on-click": "playerctl next",
+        "on-click-right": "playerctl previous",
+        "scroll-step": 5.0,
+        "on-scroll-up": "pamixer -i 1",
+        "on-scroll-down": "pamixer -d 1",
+        "smooth-scrolling-threshold": 1,
+        "player-icons": {
+            "chromium": "",
+            "default": "",
+            "firefox": "",
+            "kdeconnect": "",
+            "mopidy": "",
+            "mpv": "󰐹",
+            "spotify": "",
+            "vlc": "󰕼",
+        },
+        "status-icons": {
+            "paused": "",
+            "playing": "",
+            "stopped": "",
+        },
+        // "ignored-players": ["firefox"]
+        "max-length": 20,
+    },
+
+    "custom/pacman": {
+        "format": "󰅢 {}",
+        "interval": 30,   
+        "exec": "yay -Qu | wc -l",
+        "exec-if": "exit 0",
+        "on-click": "kitty sh -c 'yay -Syu; echo Done - Press enter to exit; read'; pkill -SIGRTMIN+8 waybar",
+        "signal": 8,
+        "tooltip": false,
+    },
+
+    "network": {
+        "format-wifi": "",
+        "format-ethernet":"",
+        "format-disconnected": "",
+        "tooltip-format-disconnected": "Error",
+        "tooltip-format-wifi": "{essid} ({signalStrength}%) ",
+        "tooltip-format-ethernet": "{ifname} 🖧 ",
+        "on-click": "kitty sh -c 'unset COLORTERM;TERM=xterm-old nmtui'"
+    },
+
+    "bluetooth": {
+        "format-on": "󰂯",
+        "format-off": "BT-off",
+        "format-disabled": "󰂲",
+        "format-connected-battery": "{device_battery_percentage}% 󰂯",
+        "format-alt": "{device_alias} 󰂯",
+        "tooltip-format": "{controller_alias}\t{controller_address}\n\n{num_connections} connected",
+        "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{num_connections} connected\n\n{device_enumerate}",
+        "tooltip-format-enumerate-connected": "{device_alias}\n{device_address}",
+        "tooltip-format-enumerate-connected-battery": "{device_alias}\n{device_address}\n{device_battery_percentage}%",
+        "on-click-right": "blueman-manager",
+    }, 
+    
+    "custom/notification": {
+        "tooltip": false,
+        "format": "  ",
+        "on-click": "swaync-client -t -sw",
+        "escape": true
+    },
+
+    "custom/power": {
+        "format": " ",
+        "icon-size": 20,
+        "on-click": "wlogout -C $HOME/.config/wlogout/nova.css -l $HOME/.config/wlogout/layout -b 5 -B 400 -T 400",
+        "tooltip": false,
+    },
+        
+    "clock": {
+        "format": "  <b>{:%H:%M - %d.%m.%Y}</b>",
+        "tooltip": false,
+        "escape": false
+    },
+    "date": {
+        "format": "{:%d.%m.%Y}",
+        "tooltip": false
+    }
+}

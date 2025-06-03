@@ -103,8 +103,6 @@ step_symlink_dotfiles() {
     done
     echo ":: Done stowing selected dotfiles."
   fi
-
-  # todo set background image
 }
 
 step_uninstall_gum() {
