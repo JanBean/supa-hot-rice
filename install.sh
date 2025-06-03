@@ -9,7 +9,6 @@ source ./scriptdata/system-configuration
 source ./manager/package-manager
 source ./manager/app-manager
 
-
 start_task() {
     printf "\e[34m[$0]: Wassssssuuuuuuuuuup!!!?:\n"
     printf "\e[31m"
@@ -94,12 +93,18 @@ step_symlink_dotfiles() {
     mapfile -t dotfile_dirs <<< "$selected_dotfiles"
     for dir in "${dotfile_dirs[@]}"; do
       echo ":: Preparing to stow '$dir'"
-      stow "$dir" -d "$DOTFILES_DIR" -t "$TARGET" --adopt # stow dir to target and adopt existing files
-      git diff
-      git reset --hard # overwrite adopted files with original content
+      ask_execute stow "$dir" -d "$DOTFILES_DIR" -t "$TARGET" --adopt # stow dir to target and adopt existing files
+      if gum confirm --default=false "Git diff to compare adopted and committed files?"; then
+        ask_execute git diff
+      fi
+      if gum confirm --default=true "Discard adopted files and revert back to contents from last commit?"; then
+        ask_execute git reset --hard # Discard adopted file and revert back to contents as per last commit
+      fi
     done
     echo ":: Done stowing selected dotfiles."
   fi
+
+  # todo set background image
 }
 
 step_uninstall_gum() {
