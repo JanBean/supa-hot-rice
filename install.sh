@@ -77,13 +77,22 @@ STEP_FUNCTIONS["Uninstall Gum"]="step_uninstall_gum"
 
 # --- Step Selection Prompt ---
 echo -e "\n\e[1;36mSelect which steps to run:\e[0m"
-selected_steps=$(gum choose --no-limit --cursor-prefix "[x] " --selected-prefix "[✓] " --unselected-prefix "[ ] " \
-  --selected="Update System" \
-  --selected="Download Installers (yay, ...)" \
-  --selected="Install Packages" \
-  --selected="Install Apps" \
-  --selected="Setup Groups/Services" \
-  --selected="Symlink + Configure Dotfiles" \
+selected_steps=$(gum choose --no-limit \
+  --cursor-prefix "[x] " \
+  --selected-prefix "[✓] " \
+  --unselected-prefix "[ ] " \
+  --selected "Update System" \
+  --selected "Download Installers (yay, ...)" \
+  --selected "Install Packages" \
+  --selected "Install Apps" \
+  --selected "Setup Groups/Services" \
+  --selected "Symlink + Configure Dotfiles" \
+  "Update System" \
+  "Download Installers (yay, ...)" \
+  "Install Packages" \
+  "Install Apps" \
+  "Setup Groups/Services" \
+  "Symlink + Configure Dotfiles" \
   "Uninstall Gum")
 
 # Run the selected steps
