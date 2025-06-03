@@ -34,15 +34,15 @@ ask_backup_files () {
 
 ask_confirm_exec() {
   printf '\n'
-  printf 'Do you want to confirm every time before a command executes?\n'
-  printf '  y = Yes, ask me before executing each of them. (DEFAULT)\n'
-  printf '  n = No, just execute them automatically.\n'
+  printf 'Do you want to confirm every time before a command executes?[y/N/a]\n'
+  printf '  y = Yes, ask me before executing each of them.\n'
+  printf '  N = No, just execute them automatically. (DEFAULT)\n'
   printf '  a = Abort.\n\e[0m'
   read -p "====> " p
   case $p in
-    n) ask=false ;;
+    y) ask=true ;;
     a) exit 1 ;;
-    *) ask=true ;;
+    *) ask=false ;;
   esac
 }
 
@@ -91,28 +91,30 @@ step_symlink_dotfiles() {
   if [[ "$selected_dotfiles" == "CANCEL" || -z "$selected_dotfiles" ]]; then
       echo ":: Loading dotfiles cancelled."
   else
-    # Convert selection to an array if multiple were selected
-    IFS=$'\n' read -rd '' -a choices <<<"$selected_dotfiles"
+    pushd "$DOTFILES_DIR"
 
-    # Loop through selected dirs
-    for dir in "${choices[@]}"; do
-        echo ":: Preparing to stow '$dir'"
+    mapfile -t dotfile_dirs <<< "$selected_dotfiles"
+    for dir in "${dotfile_dirs[@]}"; do
+      echo ":: Preparing to stow '$dir'"
 
-        # Preview stow output and parse file paths
-        while IFS= read -r line; do
-            # stow -nv outputs something like: "LINK: .config/foo -> /home/user/.config/foo"
-            # We extract the target path from the output
-            target_path=$(echo "$line" | awk -F " -> " '{print $2}')
-            if [[ -n "$target_path" ]]; then
-                echo ":: Removing existing file: $target_path"
-                rm -rf "$target_path"
-            fi
-        done < <(stow -nv "$dir" -d "$DOTFILES_DIR" -t "$TARGET")
+      # Get list of conflicts using a dry-run
+      conflicts=$(stow --no --verbose "$dir" 2>&1 | grep -oP "(?<=existing target is )[^']+")
 
-        # Actually stow it now
-        stow "$dir" -d "$DOTFILES_DIR" -t "$TARGET"
-        echo ":: '$dir' stowed successfully"
+      # Remove only the conflicting files
+      for conflict in $conflicts; do
+          full_path="$TARGET/$conflict"
+          if [[ -e "$full_path" || -L "$full_path" ]]; then
+              echo ":: Removing conflicting file: $full_path"
+              on_error_retry rm -rf "$full_path"
+          fi
+      done
+
+      # Now safely stow
+      stow "$dir"
     done
+
+    popd
+    echo ":: Done stowing selected dotfiles."
   fi
 }
 
@@ -161,9 +163,9 @@ STEP_FUNCTIONS["Uninstall Gum"]="step_uninstall_gum"
 # --- Step Selection Prompt ---
 echo -e "\n\e[1;36mSelect which steps to run:\e[0m"
 selected_steps=$(gum choose --no-limit \
-  --cursor-prefix "[x] " \
-  --selected-prefix "[✓] " \
-  --unselected-prefix "[ ] " \
+  --cursor-prefix ">" \
+  --selected-prefix "✓" \
+  --unselected-prefix "-" \
   --selected "Update System" \
   --selected "Set Up Installers" \
   --selected "Install Packages" \
