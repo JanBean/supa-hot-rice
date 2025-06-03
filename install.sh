@@ -89,7 +89,7 @@ step_symlink_dotfiles() {
   # Prompt user to choose
   selected_dotfiles=$(gum choose --no-limit "${stow_dirs[@]}" "CANCEL")
   if [[ "$selected_dotfiles" == "CANCEL" || -z "$selected_dotfiles" ]]; then
-      echo ":: Loading dotfiles cancelled."
+    echo ":: Loading dotfiles cancelled."
   else
     pushd "$DOTFILES_DIR"
 
@@ -98,7 +98,7 @@ step_symlink_dotfiles() {
       echo ":: Preparing to stow '$dir'"
 
       # Get list of conflicts using a dry-run
-      conflicts=$(stow --no --verbose "$dir" 2>&1 | grep -oP "(?<=existing target is )[^']+")
+      conflicts=$(stow "$dir" --no --verbose -t "$TARGET" 2>&1 | grep -oP "(?<=existing target is )[^']+")
 
       # Remove only the conflicting files
       for conflict in $conflicts; do
@@ -110,7 +110,7 @@ step_symlink_dotfiles() {
       done
 
       # Now safely stow
-      stow "$dir"
+      stow "$dir" -t "$TARGET"
     done
 
     popd
@@ -163,9 +163,6 @@ STEP_FUNCTIONS["Uninstall Gum"]="step_uninstall_gum"
 # --- Step Selection Prompt ---
 echo -e "\n\e[1;36mSelect which steps to run:\e[0m"
 selected_steps=$(gum choose --no-limit \
-  --cursor-prefix ">" \
-  --selected-prefix "✓" \
-  --unselected-prefix "-" \
   --selected "Update System" \
   --selected "Set Up Installers" \
   --selected "Install Packages" \
