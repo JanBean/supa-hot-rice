@@ -62,7 +62,7 @@ esac
 set -e # exit if non zero exit status
 
 # install gum for fancy dialogues
-on_error_retry sudo pacman -S gum
+on_error_retry pacman -S gum
 
 # Map step names to functions
 declare -A STEP_FUNCTIONS
