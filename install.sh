@@ -91,29 +91,13 @@ step_symlink_dotfiles() {
   if [[ "$selected_dotfiles" == "CANCEL" || -z "$selected_dotfiles" ]]; then
     echo ":: Loading dotfiles cancelled."
   else
-    pushd "$DOTFILES_DIR"
-
     mapfile -t dotfile_dirs <<< "$selected_dotfiles"
     for dir in "${dotfile_dirs[@]}"; do
       echo ":: Preparing to stow '$dir'"
-
-      # Get list of conflicts using a dry-run
-      conflicts=$(stow "$dir" --no --verbose -t "$TARGET" 2>&1 | grep -oP "(?<=existing target is )[^']+")
-
-      # Remove only the conflicting files
-      for conflict in $conflicts; do
-          full_path="$TARGET/$conflict"
-          if [[ -e "$full_path" || -L "$full_path" ]]; then
-              echo ":: Removing conflicting file: $full_path"
-              on_error_retry rm -rf "$full_path"
-          fi
-      done
-
-      # Now safely stow
-      stow "$dir" -t "$TARGET"
+      stow "$dir" -d "$DOTFILES_DIR" -t "$TARGET" --adopt # stow dir to target and adopt existing files
+      git diff
+      git reset --hard # overwrite adopted files with original content
     done
-
-    popd
     echo ":: Done stowing selected dotfiles."
   fi
 }
