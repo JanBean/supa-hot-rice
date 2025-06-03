@@ -111,7 +111,7 @@ install_theme() {
       rm -rf ~/.config/hypr
       rm -rf ~/.config/wofi
       rm -rf ~/.config/kitty
-      stow "$theme"
+      stow "$theme" -t ~
 
       # reload hyprland
       hyprctl reload

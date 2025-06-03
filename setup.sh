@@ -1,7 +1,7 @@
 #!/bin/bash
 # Online script for install supa-hot-rice.
 
-me="-->online-setup<--"
+me="Supa Hot Rice"
 remote_repo=JanBean/supa-hot-rice
 set -e
 
@@ -30,9 +30,15 @@ function x() {
 command -v pacman || { echo "\"pacman\" not found. This script only work for Arch(-based) Linux distros. Aborting..."; exit 1 ; }
 
 if [ -z "$1" ]; then
-  path=~/.cache/supa-hot-rice
+  path=~/supa-hot-rice
 else
   path="$1"
+fi
+
+# Check if git is installed, install if not
+if ! command -v git >/dev/null; then
+  echo "$me: Git is not installed. Installing with pacman..."
+  x sudo pacman -Sy --noconfirm git
 fi
 
 echo "$me: Downloading repo to $path ..."

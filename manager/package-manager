@@ -33,12 +33,12 @@ install_local_pkgbuild() {
 
 	on_error_retry pushd $location
 
+	source ./PKGBUILD
+
   # install as dependencies to hide from explicit installed pkgs and auto romeovable
 	on_error_retry yay -S $installflags --asdeps "${depends[@]}"
 	# package local
 	on_error_retry makepkg -Asi --noconfirm
-
-	source ./PKGBUILD # Execute commands from PKGBUILD file in the current shell
 
 	on_error_retry popd
 }

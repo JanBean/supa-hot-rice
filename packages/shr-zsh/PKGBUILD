@@ -4,6 +4,7 @@ pkgrel=2
 pkgdesc='Supa Hot Rice ZSH shit shell'
 arch=(any)
 license=(None)
+install=shr-zsh.install
 depends=(
     zsh                     # shell
     zsh-completions         # tab completion for zsh
@@ -12,31 +13,3 @@ depends=(
     powerline-fonts-git     # Fonts with glyphs for Powerline-style prompts
     stow                    # required for symlink config
 )
-
-installZsh() {
-    # Change shell to zsh
-    while ! chsh -s $(which zsh); do
-        echo "ERROR: Authentication failed. Please enter the correct password."
-        sleep 1
-    done
-    echo ":: Shell is now zsh."
-
-    # install oh-my-zsh
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-
-    # stow zsh (symlink .files)
-    echo ":: create symlink for zsh config"
-    rm -rf ~/.zshrc
-    stow zsh
-
-    # Installing zsh-autosuggestions
-    if [ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions" ]; then
-        echo ":: Installing zsh-autosuggestions"
-        git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-    else
-        echo ":: zsh-autosuggestions already installed"
-    fi
-
-    echo ":: Select your font by calling: oh-my-posh font install "
-    # im using Hack
-}
