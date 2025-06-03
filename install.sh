@@ -120,20 +120,13 @@ install_theme() {
 
 ask_execute install_theme
 
-# some foldes (eg. .local/bin) should be processed separately to avoid `--delete' for rsync,
-# since the files here come from different places, not only about one program.
-ask_execute rsync -av ".local/bin/" "$XDG_BIN_HOME"
-
 # Prevent hyprland from not fully loaded
 sleep 1
-try hyprctl reload
 
-existed_zsh_conf=n
-grep -q 'source ${XDG_CONFIG_HOME:-~/.config}/zshrc.d/dots-hyprland.zsh' ~/.zshrc && existed_zsh_conf=y
+try hyprctl reload
 
 ################################# finish ################################
 
-printf "\e[36mPress \e[30m\e[46m Ctrl+Super+T \e[0m\e[36m to select a wallpaper\e[0m\n"
 printf "\e[36mPress \e[30m\e[46m Super+/ \e[0m\e[36m for a list of keybinds\e[0m\n"
 printf "\n"
 

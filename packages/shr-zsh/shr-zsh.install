@@ -12,10 +12,12 @@ post_install() {
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 
     # stow zsh (symlink .files)
-    echo ":: create symlink for zsh config"
-    ls -a
+    echo ":: create symlink for zsh config in dir:"
+    pwd
+
     rm -rf ~/.zshrc
-    stow zsh -t ~
+
+    stow zsh -d ~/supa-hot-rice -t ~ -v 2
 
     # Installing zsh-autosuggestions
     if [ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions" ]; then
