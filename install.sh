@@ -189,14 +189,16 @@ selected_steps=$(gum choose --no-limit \
   "Uninstall Gum")
 
 # Run the selected steps
-while IFS= read -r step_label; do
+mapfile -t steps <<< "$selected_steps"
+for step_label in "${steps[@]}"; do
+  echo -e "\n Running step: \e[1m$step_label\e[0m"
   step_func="${STEP_FUNCTIONS[$step_label]}"
   if [[ -n "$step_func" ]]; then
-    $step_func
+    on_error_retry $step_func
   else
-    echo "⚠️ Unknown step: $step_label"
+    echo "!! Unknown step: $step_label"
   fi
-done <<< "$selected_steps"
+done
 
 printf "\e[36m[$0]: ######################### Finishing ####################################\e[0m\n"
 
