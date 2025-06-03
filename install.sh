@@ -45,7 +45,7 @@ ask_confirm_exec() {
   printf 'Do you want to confirm every time before a command executes?\n'
   printf '  y = Yes, ask me before executing each of them. (DEFAULT)\n'
   printf '  n = No, just execute them automatically.\n'
-  printf '  a = Abort.\n'
+  printf '  a = Abort.\n\e[0m'
   read -p "====> " p
   case $p in
     n) ask=false ;;

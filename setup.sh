@@ -37,7 +37,7 @@ fi
 
 # Check if git is installed, install if not
 if ! command -v git >/dev/null; then
-  echo "$me: Git is not installed. Installing with pacman..."
+  echo -e "\e[34m$me: Git is not installed. Installing with pacman....\e[0m"
   x sudo pacman -Sy --noconfirm git
 fi
 
