@@ -71,13 +71,22 @@ step_install_apps() {
   ask_execute fc-cache -fv # scan font directories and rebuild font cache
 }
 
-step_setup_services() {
+step_setup_system() {
   base_system_config
 }
 
 step_symlink_dotfiles() {
   # In case some folders do not exists
   ask_execute mkdir -p $XDG_BIN_HOME $XDG_CACHE_HOME $XDG_CONFIG_HOME $XDG_DATA_HOME
+
+  if gum confirm --default=true "Set Desktop wallpaper? (Some themes require a Wallpaper)"; then
+    wallpaper_path=$(gum input --placeholder "Enter path to wallpaper")
+    if [ -n "$wallpaper_path" ]; then
+      ask_execute wall -i "$wallpaper_path"
+    else
+      echo "No path specified, continuing symlinking dotfiles"
+    fi
+  fi
 
   DOTFILES_DIR="./dotfiles"
   TARGET="$HOME"
@@ -143,7 +152,7 @@ STEP_FUNCTIONS["Update System"]="step_system_update"
 STEP_FUNCTIONS["Set Up Installers"]="step_set_up_installers"
 STEP_FUNCTIONS["Install Packages"]="step_install_packages"
 STEP_FUNCTIONS["Install Apps"]="step_install_apps"
-STEP_FUNCTIONS["Setup Groups/Services"]="step_setup_services"
+STEP_FUNCTIONS["Setup System and Services"]="step_setup_system"
 STEP_FUNCTIONS["Symlink + Configure Dotfiles"]="step_symlink_dotfiles"
 STEP_FUNCTIONS["Uninstall Gum"]="step_uninstall_gum"
 
@@ -154,13 +163,13 @@ selected_steps=$(gum choose --no-limit \
   --selected "Set Up Installers" \
   --selected "Install Packages" \
   --selected "Install Apps" \
-  --selected "Setup Groups/Services" \
+  --selected "Setup System and Services" \
   --selected "Symlink + Configure Dotfiles" \
   "Update System" \
   "Set Up Installers" \
   "Install Packages" \
   "Install Apps" \
-  "Setup Groups/Services" \
+  "Setup System and Services" \
   "Symlink + Configure Dotfiles" \
   "Uninstall Gum")
 
