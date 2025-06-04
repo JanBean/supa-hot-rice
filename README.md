@@ -20,7 +20,7 @@
 
 </details>
 
-# Copied some stuff from:
+# Yanked some stuff from:
 https://github.com/end-4/dots-hyprland/tree/main
 
 https://github.com/Readock/sssystem
