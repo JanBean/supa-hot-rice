@@ -1,6 +1,4 @@
 - [ ] in system config i2c evtl zum laufen bringen
 - [ ] nvidia drivers
-- [ ] tabs oder white space apps-flathub.lst
 - [ ] firewall
 - [ ] yazi
-- [ ] background img fix

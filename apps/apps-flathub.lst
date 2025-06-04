@@ -1,11 +1,7 @@
-org.kde.krita
-com.obsproject.Studio
+com.obsproject.Studioorg.kde.krita
 com.github.Murmele.Gittyup
-
-# Audio controller
-com.saivert.pwvucontrol
-# Adjust flatpak permissoins
-com.github.tchx84.Flatseal
+com.saivert.pwvucontrol # Audio controller
+com.github.tchx84.Flatseal # Adjust flatpak permissoins
 
 # Games
 net.lutris.Lutris
