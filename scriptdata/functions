@@ -68,7 +68,7 @@ function showfun() {
 
 function remove_bashcomments_emptylines(){
   mkdir -p $(dirname $2)
-  cat $1 | sed -e '/^[[:blank:]]*#/d;s/#.*//' -e '/^[[:space:]]*$/d' > $2
+  sed -e 's/[[:blank:]]*#.*//' -e '/^[[:blank:]]*$/d' -e 's/[[:space:]]//g' "$1" > "$2"
 }
 
 function prevent_sudo_or_root(){
