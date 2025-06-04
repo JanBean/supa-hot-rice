@@ -6,7 +6,7 @@ spotify-launcher
 discord
 # davinci-resolve
 flatpak
-wine # native windows apps
+#wine # native windows apps
 
 blender
 cuda # rendering backend support for blender with nvidia
