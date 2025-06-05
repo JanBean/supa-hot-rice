@@ -3,6 +3,8 @@ com.github.Murmele.Gittyup
 com.saivert.pwvucontrol # Audio controller
 com.github.tchx84.Flatseal # Adjust flatpak permissoins
 
+com.usebottles.bottles # windows apps
+
 # Games
 net.lutris.Lutris
 
