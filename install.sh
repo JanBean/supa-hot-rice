@@ -82,7 +82,7 @@ step_symlink_dotfiles() {
   if gum confirm --default=true "Set Desktop wallpaper? (Some themes require a Wallpaper)"; then
     wallpaper_path=$(gum input --placeholder "Enter path to wallpaper")
     if [ -n "$wallpaper_path" ]; then
-      ask_execute wall -i "$wallpaper_path"
+      ask_execute wal -i "$wallpaper_path"
     else
       echo "No path specified, continuing symlinking dotfiles"
     fi
