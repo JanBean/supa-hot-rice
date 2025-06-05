@@ -1,4 +1,5 @@
-com.obsproject.Studioorg.kde.krita
+com.obsproject.Studio
+org.kde.krita
 com.github.Murmele.Gittyup
 com.saivert.pwvucontrol # Audio controller
 com.github.tchx84.Flatseal # Adjust flatpak permissoins
