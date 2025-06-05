@@ -1,16 +1,16 @@
-com.obsproject.Studio
-org.kde.krita
-com.github.Murmele.Gittyup
-com.saivert.pwvucontrol # Audio controller
-com.github.tchx84.Flatseal # Adjust flatpak permissoins
+com.obsproject.Studio                   # screen recording and live streaming
+org.kde.krita                           # digital painting and illustration
+com.github.Murmele.Gittyup              # Git GUI client
+com.usebottles.bottles                  # eumlate windows apps
+com.saivert.pwvucontrol                 # Audio controller
 
-com.usebottles.bottles # windows apps
+com.github.tchx84.Flatseal              # Adjust flatpak permissoins
 
 # Games
-net.lutris.Lutris
+net.lutris.Lutris                       # game manager
 
 # Media
-com.interversehq.qView
+com.interversehq.qView                  # lightweight image viewer
 
 #software dev
 com.jetbrains.PyCharm-Community
