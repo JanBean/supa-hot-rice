@@ -187,6 +187,8 @@ done
 
 printf "\e[36m[$0]: ######################### Finishing ####################################\e[0m\n"
 
+ask_execute rm -rf ./cache
+
 # Prevent hyprland from not fully loaded
 sleep 1
 
