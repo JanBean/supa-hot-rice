@@ -3,6 +3,8 @@
 
 me="Supa Hot Rice"
 remote_repo=JanBean/supa-hot-rice
+branch=theme-rework
+
 set -e
 
 function try { "$@" || sleep 0; }
@@ -45,11 +47,11 @@ echo "$me: Downloading repo to $path ..."
 x mkdir -p $path
 x cd $path
 if [ -z "$(ls -A)" ]; then
-  x git init -b master
+  x git init -b $branch
   x git remote add origin https://github.com/$remote_repo
 fi
 git remote get-url origin|grep -q $remote_repo || { echo "Dir \"$path\" is not empty, nor a git repo of $remote_repo. Aborting..."; exit 1 ; }
-x git pull origin master && git submodule update --init --recursive
+x git pull origin $branch && git submodule update --init --recursive
 echo "$me: Downloaded."
 echo "$me: Running \"install.sh\"."
 x ls -a
