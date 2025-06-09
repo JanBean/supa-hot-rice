@@ -63,7 +63,7 @@ step_install_packages() {
   showfun handle-deprecated-dependencies
   ask_execute handle-deprecated-dependencies
 
-  install_packages
+  install_default_packages
 }
 
 step_install_apps() {
@@ -79,38 +79,20 @@ step_symlink_dotfiles() {
   # In case some folders do not exists
   ask_execute mkdir -p $XDG_BIN_HOME $XDG_CACHE_HOME $XDG_CONFIG_HOME $XDG_DATA_HOME
 
-  if gum confirm --default=true "Set Desktop wallpaper? (Some themes require a Wallpaper)"; then
-    wallpaper_path=$(gum input --placeholder "Enter path to wallpaper")
-    if [ -n "$wallpaper_path" ]; then
-      ask_execute wal -i "$wallpaper_path"
-    else
-      echo "No path specified, continuing symlinking dotfiles"
-    fi
-  fi
-
   DOTFILES_DIR="./dotfiles"
-  TARGET="$HOME"
 
   # Get all subdirectories (i.e., stow packages)
   mapfile -t stow_dirs < <(find "$DOTFILES_DIR" -mindepth 1 -maxdepth 1 -type d -printf "%f\n")
 
   # Prompt user to choose
-  selected_dotfiles=$(gum choose --no-limit "${stow_dirs[@]}" "CANCEL")
-  if [[ "$selected_dotfiles" == "CANCEL" || -z "$selected_dotfiles" ]]; then
+  selected_themes=$(gum choose --no-limit "${stow_dirs[@]}" "CANCEL")
+  if [[ "$selected_themes" == "CANCEL" || -z "$selected_themes" ]]; then
     echo ":: Loading dotfiles cancelled."
   else
-    mapfile -t dotfile_dirs <<< "$selected_dotfiles"
-    for dir in "${dotfile_dirs[@]}"; do
-      echo ":: Preparing to stow '$dir'"
-      ask_execute stow "$dir" -d "$DOTFILES_DIR" -t "$TARGET" --adopt # stow dir to target and adopt existing files
-      if gum confirm --default=false "Git diff to compare adopted and committed files?"; then
-        ask_execute git diff
-      fi
-      if gum confirm --default=true "Discard adopted files and revert back to contents from last commit?"; then
-        ask_execute git reset --hard # Discard adopted file and revert back to contents as per last commit
-      fi
+    mapfile -t themes <<< "$selected_themes"
+    for theme in "${themes[@]}"; do
+      ./install-theme.sh "$theme"
     done
-    echo ":: Done stowing selected dotfiles."
   fi
 }
 

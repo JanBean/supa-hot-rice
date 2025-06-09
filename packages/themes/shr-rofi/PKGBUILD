@@ -1,0 +1,10 @@
+pkgname=shr-rofi
+pkgver=1.0
+pkgrel=2
+pkgdesc='Rofi and its extras'
+arch=(any)
+license=(None)
+depends=(
+    rofi-wayland        # window switcher, Application launcher and dmenu replacement.
+    rofimoji            # rofi emoji picker
+)

@@ -1,0 +1,13 @@
+pkgname=shr-hyprland-ecosystem
+pkgver=1.0
+pkgrel=2
+pkgdesc='Hyprland Ecosystem stuff'
+arch=(any)
+license=(None)
+depends=(
+    hyprpaper           # wallpaper tool
+    hyprlock            # screen locker
+    hypridle            # auto idler
+    hyprswitch          # alt tab
+    hyprcursor          # cursor theme
+)

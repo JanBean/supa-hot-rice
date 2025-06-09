@@ -1,0 +1,13 @@
+pkgname=shr-sssystem-core
+pkgver=1.0
+pkgrel=2
+pkgdesc='Sssystem Core dependencies'
+arch=(any)
+license=(None)
+depends=(
+    wofi                # launcher for wayland compositors (e.g. sway)
+    wtype               # wayland xdotool-type replacement
+    waybar              # status bar for wayland
+    swww                # wayland wallpaper daemon
+    swaync              # sway-style notification daemon (wayland-native)
+)

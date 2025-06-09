@@ -1,0 +1,10 @@
+pkgname=shr-ui
+pkgver=1.0
+pkgrel=2
+pkgdesc='Supa Hot Rice UI Shit'
+arch=(any)
+license=(None)
+depends=(
+    nwg-look            # theme tool for GTK on wayland
+    materia-gtk-theme   # modern flat gtk theme
+)

@@ -2,3 +2,4 @@
 - [ ] firewall
 - [ ] yazi
 - [ ] zsh install scipt fixen
+- [ ] evtl statt default packages, standard packages machen und beim installieren prompten, welche man haben will, dies als liste and package manager übergeben

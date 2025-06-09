@@ -7,10 +7,10 @@
 # cd "$(dirname "$0")"
 # export base="$(pwd)"
 
-install_packages() {
+install_default_packages() {
   # Collect all subdirectories (with PKGBUILD) inside ./packages
-  metapkgs=()
-  for dir in ./packages/*; do
+  local metapkgs=()
+  for dir in ./packages/default/*; do
     [[ -d "$dir" && -f "$dir/PKGBUILD" ]] && metapkgs+=("$dir")
   done
 
@@ -19,6 +19,20 @@ install_packages() {
     metainstallflags="--needed"
     $ask && showfun install_local_pkgbuild || metainstallflags="$metainstallflags --noconfirm"
     ask_execute install_local_pkgbuild "$i" "$metainstallflags"
+  done
+
+  # These python packages are installed using uv, not pacman.
+  showfun install_python_packages
+  ask_execute install_python_packages
+}
+
+install_theme_packages() {
+  # Install all collected packages
+  for themepkg in "$@"; do
+    pkg_path="packages/themes/$themepkg"
+    metainstallflags="--needed"
+    $ask && showfun install_local_pkgbuild || metainstallflags="$metainstallflags --noconfirm"
+    ask_execute install_local_pkgbuild "$pkg_path" "$metainstallflags"
   done
 
   # These python packages are installed using uv, not pacman.
@@ -40,13 +54,19 @@ install_local_pkgbuild() {
 	# package local
 	on_error_retry makepkg -Asi --noconfirm
 
+  # Optional package setup
+  if [[ -f "./setup.sh" ]]; then
+    source ./setup.sh
+    load_setup
+  fi
+
 	on_error_retry popd
 }
 
-uninstall_packages() {
+uninstall_default_packages() {
   # Collect all uninstall targets from packages
   metapkgs=()
-  for dir in ./packages/*; do
+  for dir in ./packages/default/*; do
     [[ -d "$dir" && -f "$dir/PKGBUILD" ]] && metapkgs+=("$dir")
   done
 
@@ -67,6 +87,12 @@ uninstall_local_pkgbuild() {
 
 	# Uninstall all package names (handles split packages too)
 	on_error_retry yay -Rns --noconfirm "${pkgname[@]}"
+
+	  # Optional post-install
+  if [[ -f "./setup.sh" ]]; then
+    source ./setup.sh
+    unload_setup
+  fi
 
 	on_error_retry popd
 }
@@ -89,7 +115,7 @@ install_additional_dependencies() {
 }
 
 install_python_packages() {
-  remove_bashcomments_emptylines python-packages/python-packages.in ./cache/python-packages.in
+  remove_bashcomments_emptylines packages/python/python-packages.in ./cache/python-packages.in
 
   UV_NO_MODIFY_PATH=1
   SHR_VIRTUAL_ENV=$XDG_STATE_HOME/ags/.venv
@@ -97,7 +123,7 @@ install_python_packages() {
   # we need python 3.12 https://github.com/python-pillow/Pillow/issues/8089
   on_error_retry uv venv --prompt .venv $(eval echo $SHR_VIRTUAL_ENV) -p 3.12
   on_error_retry source $(eval echo $SHR_VIRTUAL_ENV)/bin/activate
-  on_error_retry uv pip compile ./cache/python-packages.in -o python-packages/python-packages.txt # evtl python-packages.txt vorher mit mkdir erstellen
-  on_error_retry uv pip install -r python-packages/python-packages.txt
+  on_error_retry uv pip compile ./cache/python-packages.in -o packages/python/python-packages.txt # evtl python-packages.txt vorher mit mkdir erstellen
+  on_error_retry uv pip install -r packages/python/python-packages.txt
   on_error_retry deactivate # We don't need the virtual environment anymore
 }
