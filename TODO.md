@@ -1,4 +1,4 @@
-- [ ] in system config i2c evtl zum laufen bringen
 - [ ] nvidia drivers
 - [ ] firewall
 - [ ] yazi
+- [ ] zsh install scipt fixen
