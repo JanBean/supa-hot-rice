@@ -79,18 +79,18 @@ step_symlink_dotfiles() {
   # In case some folders do not exists
   ask_execute mkdir -p $XDG_BIN_HOME $XDG_CACHE_HOME $XDG_CONFIG_HOME $XDG_DATA_HOME
 
-  DOTFILES_DIR="./dotfiles"
+  THEME_DIRS="./themes"
 
   # Get all subdirectories (i.e., stow packages)
-  mapfile -t stow_dirs < <(find "$DOTFILES_DIR" -mindepth 1 -maxdepth 1 -type d -printf "%f\n")
+  mapfile -t themes < <(find "$THEME_DIRS" -mindepth 1 -maxdepth 1 -type d -printf "%f\n")
 
   # Prompt user to choose
-  selected_themes=$(gum choose --no-limit "${stow_dirs[@]}" "CANCEL")
+  selected_themes=$(gum choose --no-limit "${themes[@]}" "CANCEL")
   if [[ "$selected_themes" == "CANCEL" || -z "$selected_themes" ]]; then
     echo ":: Loading dotfiles cancelled."
   else
-    mapfile -t themes <<< "$selected_themes"
-    for theme in "${themes[@]}"; do
+    mapfile -t selected_themes_list <<< "$selected_themes"
+    for theme in "${selected_themes_list[@]}"; do
       ./install-theme.sh "$theme"
     done
   fi
