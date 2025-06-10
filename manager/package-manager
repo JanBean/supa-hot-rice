@@ -46,13 +46,13 @@ install_local_pkgbuild() {
 	# package local
 	on_error_retry makepkg -Asi --noconfirm
 
+	on_error_retry popd
+
   # Optional package setup
-  if [[ -f "./setup.sh" ]]; then
-    source ./setup.sh
+  if [[ -f "$location/setup.sh" ]]; then
+    source $location/setup.sh
     load_setup
   fi
-
-	on_error_retry popd
 }
 
 uninstall_default_packages() {

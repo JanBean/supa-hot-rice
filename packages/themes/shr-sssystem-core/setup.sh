@@ -3,7 +3,7 @@ load_setup() {
   if gum confirm --default=true "Set Desktop wallpaper? (Some themes require a Wallpaper)"; then
 
     DEFAULT_PATH="themes/sssystem-theme/dotfiles/.config/hypr/resources/ruan-jia.jpg"
-    wallpaper_path=$(gum input --placeholder "$DEFAULT_PATH" --prompt "Enter path to wallpaper: (default = $DEFAULT_PATH")
+    wallpaper_path=$(gum input --placeholder "$DEFAULT_PATH" --prompt "Enter path to wallpaper: ")
 
     dir
 
