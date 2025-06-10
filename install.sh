@@ -64,6 +64,10 @@ step_install_packages() {
   ask_execute handle-deprecated-dependencies
 
   install_default_packages
+
+  # python packages are installed using uv, not pacman.
+  showfun install_python_packages
+  ask_execute install_python_packages
 }
 
 step_install_apps() {

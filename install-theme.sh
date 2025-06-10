@@ -23,7 +23,7 @@ ask_execute install_theme_packages "${packages[@]}"
 
 #stow theme
 echo ":: Preparing to stow '$dir'"
-ask_execute stow "$theme" -d "$theme_dir/dotfiles" -t "$TARGET" --adopt # stow dir to target and adopt existing files
+ask_execute stow dotfiles -d "$theme_dir" -t "$TARGET" --adopt # stow dir to target and adopt existing files
 if gum confirm --default=false "Git diff to compare adopted and committed files?"; then
   ask_execute git diff
 fi

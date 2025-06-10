@@ -20,10 +20,6 @@ install_default_packages() {
     $ask && showfun install_local_pkgbuild || metainstallflags="$metainstallflags --noconfirm"
     ask_execute install_local_pkgbuild "$i" "$metainstallflags"
   done
-
-  # These python packages are installed using uv, not pacman.
-  showfun install_python_packages
-  ask_execute install_python_packages
 }
 
 install_theme_packages() {
@@ -34,10 +30,6 @@ install_theme_packages() {
     $ask && showfun install_local_pkgbuild || metainstallflags="$metainstallflags --noconfirm"
     ask_execute install_local_pkgbuild "$pkg_path" "$metainstallflags"
   done
-
-  # These python packages are installed using uv, not pacman.
-  showfun install_python_packages
-  ask_execute install_python_packages
 }
 
 # yay -Bi is kinda hit or miss, instead cd into the relevant directory and manually source and install deps
