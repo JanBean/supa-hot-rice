@@ -9,27 +9,41 @@
 
 install_default_packages() {
   # Collect all subdirectories (with PKGBUILD) inside ./packages
-  local metapkgs=()
-  for dir in ./packages/default/*; do
-    [[ -d "$dir" && -f "$dir/PKGBUILD" ]] && metapkgs+=("$dir")
-  done
+  #local defaultpkgs=()
+  #for dir in ./packages/default/*; do
+  #  [[ -d "$dir" && -f "$dir/PKGBUILD" ]] && defaultpkgs+=("$dir")
+  #done
+  #TODO alle pkg namen in default ermitteln mit dir oder so
+  defaultpkgs=($(find /path/to/parent -mindepth 1 -maxdepth 1 -type d -exec test -f "{}/PKGBUILD" \; -exec basename {} \;))
 
-  # Install all collected packages
-  for i in "${metapkgs[@]}"; do
-    metainstallflags="--needed"
-    $ask && showfun install_local_pkgbuild || metainstallflags="$metainstallflags --noconfirm"
-    ask_execute install_local_pkgbuild "$i" "$metainstallflags"
-  done
+  prompt_install_packages "./packages/default" "${defaultpkgs[@]}"
 }
 
 install_theme_packages() {
   # Install all collected packages
-  for themepkg in "$@"; do
-    pkg_path="packages/themes/$themepkg"
-    metainstallflags="--needed"
-    $ask && showfun install_local_pkgbuild || metainstallflags="$metainstallflags --noconfirm"
-    ask_execute install_local_pkgbuild "$pkg_path" "$metainstallflags"
-  done
+  prompt_install_packages "./packages/themes" "$@"
+}
+
+prompt_install_packages() {
+  local pkg_super_path="$1"
+  shift
+  local pkg_list=("$@")
+
+  # Prompt user to choose
+  echo "Installing following packages, deselect undwanted:"
+  selected_pkgs=$(gum choose --no-limit "${pkg_list[@]}" "CANCEL")
+  if [[ "$selected_pkgs" == "CANCEL" || -z "$selected_pkgs" ]]; then
+    echo ":: Loading packages cancelled."
+  else
+    mapfile -t selected_pkgs_list <<< "$selected_pkgs"
+
+    for pkg in "${selected_pkgs_list[@]}"; do
+      pkg_path="$pkg_super_path/$pkg"
+      metainstallflags="--needed"
+      $ask && showfun install_local_pkgbuild || metainstallflags="$metainstallflags --noconfirm"
+      ask_execute install_local_pkgbuild "$pkg_path" "$metainstallflags"
+    done
+  fi
 }
 
 # yay -Bi is kinda hit or miss, instead cd into the relevant directory and manually source and install deps
@@ -66,6 +80,15 @@ uninstall_default_packages() {
   for i in "${metapkgs[@]}"; do
     $ask && showfun uninstall_local_pkgbuild
     ask_execute uninstall_local_pkgbuild "$i"
+  done
+}
+
+uninstall_theme_packages() {
+  # Remove all theme packages
+  for themepkg in "$@"; do
+    metaremoveflags="--noconfirm"
+    $ask && showfun sudo pacman -Rns || true
+    ask_execute sudo pacman -Rns $metaremoveflags "$themepkg"
   done
 }
 

@@ -6,11 +6,18 @@ source ./manager/package-manager
 
 set -e
 
+command -v gum || { echo "\"gum\" not found. This script only works if gum is installed. Aborting..."; exit 1 ; }
+
 theme="$1"
 theme_dir="themes/$theme"
 conf_file="$theme_dir/theme.conf"
 
 TARGET="$HOME"
+
+if [[ -z "$theme" ]]; then
+    echo "Usage: $0 <theme-name>"
+    exit 1
+fi
 
 if [[ ! -f "$conf_file" ]]; then
     echo "Missing config for theme: $theme"
