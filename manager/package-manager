@@ -29,10 +29,17 @@ prompt_install_packages() {
   shift
   local pkg_list=("$@")
 
+  options=()
+  for opt in "${pkg_list[@]}"; do
+    options+=(--selected "$opt")
+  done
+
   # Prompt user to choose
   echo "Installing following packages, deselect undwanted:"
-  selected_pkgs=$(gum choose --no-limit "${pkg_list[@]}" "CANCEL")
-  if [[ "$selected_pkgs" == "CANCEL" || -z "$selected_pkgs" ]]; then
+
+  selected_pkgs=$(printf "%s\n" "${pkg_list[@]}" | gum choose --no-limit "${options[@]}")
+
+  if [[ -z "$selected_pkgs" ]]; then
     echo ":: Loading packages cancelled."
   else
     mapfile -t selected_pkgs_list <<< "$selected_pkgs"
