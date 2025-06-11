@@ -35,12 +35,12 @@ prompt_install_packages() {
   done
 
   # Prompt user to choose
-  echo "Installing following packages, deselect undwanted:"
+  echo "\e[34mInstalling following packages, deselect undwanted:\e[0m"
 
   selected_pkgs=$(printf "%s\n" "${pkg_list[@]}" "CANCEL" | gum choose --no-limit "${options[@]}")
 
   if [[ -z "$selected_pkgs" ]] || grep -q "^CANCEL$" <<< "$selected_pkgs"; then
-    echo ":: Loading packages cancelled."
+    echo "\e[31m :: !!!!!!!!!!! Loading packages cancelled!!!!!!!!! \e[0m"
   else
     mapfile -t selected_pkgs_list <<< "$selected_pkgs"
 
