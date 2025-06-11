@@ -14,7 +14,7 @@ install_default_packages() {
   #  [[ -d "$dir" && -f "$dir/PKGBUILD" ]] && defaultpkgs+=("$dir")
   #done
   #TODO alle pkg namen in default ermitteln mit dir oder so
-  defaultpkgs=($(find /path/to/parent -mindepth 1 -maxdepth 1 -type d -exec test -f "{}/PKGBUILD" \; -exec basename {} \;))
+  defaultpkgs=($(find ./packages/default/ -mindepth 1 -maxdepth 1 -type d -exec test -f "{}/PKGBUILD" \; -exec basename {} \;))
 
   prompt_install_packages "./packages/default" "${defaultpkgs[@]}"
 }
