@@ -7,13 +7,10 @@
 # cd "$(dirname "$0")"
 # export base="$(pwd)"
 
+################################## Installing ###########################################
+
 install_default_packages() {
-  # Collect all subdirectories (with PKGBUILD) inside ./packages
-  #local defaultpkgs=()
-  #for dir in ./packages/default/*; do
-  #  [[ -d "$dir" && -f "$dir/PKGBUILD" ]] && defaultpkgs+=("$dir")
-  #done
-  #TODO alle pkg namen in default ermitteln mit dir oder so
+  # Collect all subdirectories (with PKGBUILD) inside ./packages/default/
   defaultpkgs=($(find ./packages/default/ -mindepth 1 -maxdepth 1 -type d -exec test -f "{}/PKGBUILD" \; -exec basename {} \;))
 
   prompt_install_packages "./packages/default" "${defaultpkgs[@]}"
@@ -35,12 +32,12 @@ prompt_install_packages() {
   done
 
   # Prompt user to choose
-  echo "\e[34mInstalling following packages, deselect undwanted:\e[0m"
+  echo -e "\e[34mInstalling following packages, deselect undwanted:\e[0m"
 
   selected_pkgs=$(printf "%s\n" "${pkg_list[@]}" "CANCEL" | gum choose --no-limit "${options[@]}")
 
   if [[ -z "$selected_pkgs" ]] || grep -q "^CANCEL$" <<< "$selected_pkgs"; then
-    echo "\e[31m :: !!!!!!!!!!! Loading packages cancelled!!!!!!!!! \e[0m"
+    echo -e "\e[31m :: !!!!!!!!!!! Installing packages cancelled!!!!!!!!! \e[0m"
   else
     mapfile -t selected_pkgs_list <<< "$selected_pkgs"
 
@@ -76,18 +73,28 @@ install_local_pkgbuild() {
   fi
 }
 
-uninstall_default_packages() {
-  # Collect all uninstall targets from packages
-  metapkgs=()
-  for dir in ./packages/default/*; do
-    [[ -d "$dir" && -f "$dir/PKGBUILD" ]] && metapkgs+=("$dir")
-  done
+install_python_packages() {
+  remove_bashcomments_emptylines packages/python/python-packages.in ./cache/python-packages.in
 
-  # Uninstall all collected packages
-  for i in "${metapkgs[@]}"; do
-    $ask && showfun uninstall_local_pkgbuild
-    ask_execute uninstall_local_pkgbuild "$i"
-  done
+  UV_NO_MODIFY_PATH=1
+  SHR_VIRTUAL_ENV=$XDG_STATE_HOME/ags/.venv
+  on_error_retry mkdir -p $(eval echo $SHR_VIRTUAL_ENV)
+  # we need python 3.12 https://github.com/python-pillow/Pillow/issues/8089
+  on_error_retry uv venv --prompt .venv $(eval echo $SHR_VIRTUAL_ENV) -p 3.12
+  on_error_retry source $(eval echo $SHR_VIRTUAL_ENV)/bin/activate
+  on_error_retry uv pip compile ./cache/python-packages.in -o packages/python/python-packages.txt # evtl python-packages.txt vorher mit mkdir erstellen
+  on_error_retry uv pip install -r packages/python/python-packages.txt
+  on_error_retry deactivate # We don't need the virtual environment anymore
+}
+
+############################################ Uninstalling #########################################
+
+uninstall_default_packages() {
+
+  # Collect all subdirectories (with PKGBUILD) inside ./packages/default/
+  defaultpkgs=($(find ./packages/default/ -mindepth 1 -maxdepth 1 -type d -exec test -f "{}/PKGBUILD" \; -exec basename {} \;))
+
+  prompt_uninstall_packages "./packages/default" "${defaultpkgs[@]}"
 }
 
 uninstall_theme_packages() {
@@ -97,6 +104,34 @@ uninstall_theme_packages() {
     $ask && showfun sudo pacman -Rns || true
     ask_execute sudo pacman -Rns $metaremoveflags "$themepkg"
   done
+}
+
+prompt_uninstall_packages() {
+  local pkg_super_path="$1"
+  shift
+  local pkg_list=("$@")
+
+  options=()
+  for opt in "${pkg_list[@]}"; do
+    options+=(--selected "$opt")
+  done
+
+  # Prompt user to choose
+  echo -e "\e[34m Uninstalling following packages, deselect undwanted:\e[0m"
+
+  selected_pkgs=$(printf "%s\n" "${pkg_list[@]}" "CANCEL" | gum choose --no-limit "${options[@]}")
+
+  if [[ -z "$selected_pkgs" ]] || grep -q "^CANCEL$" <<< "$selected_pkgs"; then
+    echo -e "\e[31m :: !!!!!!!!!!! Uninstalling packages cancelled!!!!!!!!! \e[0m"
+  else
+    mapfile -t selected_pkgs_list <<< "$selected_pkgs"
+
+    for pkg in "${selected_pkgs_list[@]}"; do
+      pkg_path="$pkg_super_path/$pkg"
+      $ask && showfun uninstall_local_pkgbuild
+      ask_execute uninstall_local_pkgbuild "$pkg_path"
+    done
+  fi
 }
 
 uninstall_local_pkgbuild() {
@@ -110,42 +145,11 @@ uninstall_local_pkgbuild() {
 	# Uninstall all package names (handles split packages too)
 	on_error_retry yay -Rns --noconfirm "${pkgname[@]}"
 
-	  # Optional post-install
-  if [[ -f "./setup.sh" ]]; then
-    source ./setup.sh
+	on_error_retry popd
+
+  # Optional package setup
+  if [[ -f "$location/setup.sh" ]]; then
+    source $location/setup.sh
     unload_setup
   fi
-
-	on_error_retry popd
-}
-
-install_additional_dependencies() {
-  # strip dependencies file and load in pkglist array
-  remove_bashcomments_emptylines ${DEPLISTFILE} ./cache/dependencies_stripped.conf
-  readarray -t pkglist < ./cache/dependencies_stripped.conf
-
-  # Install extra packages from dependencies.conf as declared by the user
-  if (( ${#pkglist[@]} != 0 )); then
-    if $ask; then
-      # execute per element of the array $pkglist
-      for i in "${pkglist[@]}";do ask_execute yay -S --needed $i;done
-    else
-      # execute for all elements of the array $pkglist in one line
-      ask_execute yay -S --needed --noconfirm ${pkglist[*]}
-    fi
-  fi
-}
-
-install_python_packages() {
-  remove_bashcomments_emptylines packages/python/python-packages.in ./cache/python-packages.in
-
-  UV_NO_MODIFY_PATH=1
-  SHR_VIRTUAL_ENV=$XDG_STATE_HOME/ags/.venv
-  on_error_retry mkdir -p $(eval echo $SHR_VIRTUAL_ENV)
-  # we need python 3.12 https://github.com/python-pillow/Pillow/issues/8089
-  on_error_retry uv venv --prompt .venv $(eval echo $SHR_VIRTUAL_ENV) -p 3.12
-  on_error_retry source $(eval echo $SHR_VIRTUAL_ENV)/bin/activate
-  on_error_retry uv pip compile ./cache/python-packages.in -o packages/python/python-packages.txt # evtl python-packages.txt vorher mit mkdir erstellen
-  on_error_retry uv pip install -r packages/python/python-packages.txt
-  on_error_retry deactivate # We don't need the virtual environment anymore
 }

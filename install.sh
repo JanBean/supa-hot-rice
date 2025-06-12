@@ -89,10 +89,10 @@ step_symlink_dotfiles() {
   mapfile -t themes < <(find "$THEME_DIRS" -mindepth 1 -maxdepth 1 -type d -printf "%f\n")
 
   # Prompt user to choose
-  echo "\e[34mFollowing themes are available, choose wisely:\e[0m"
+  echo -e "\e[34mFollowing themes are available, choose wisely:\e[0m"
   selected_themes=$(gum choose --no-limit "${themes[@]}" "CANCEL")
   if [[ -z "$selected_themes" ]] || grep -q "^CANCEL$" <<< "$selected_themes"; then
-    echo "\e[31m :: !!!!!!!!!!! Loading dotfiles cancelled!!!!!!!!! \e[0m"
+    echo -e "\e[31m :: !!!!!!!!!!! Installing theme cancelled !!!!!!!!! \e[0m"
   else
     mapfile -t selected_themes_list <<< "$selected_themes"
     for theme in "${selected_themes_list[@]}"; do
