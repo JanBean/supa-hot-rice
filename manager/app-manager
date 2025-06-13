@@ -20,7 +20,6 @@ install_apps() {
   ask_execute install_flathub_packages "${flathub_apps[@]}"
 }
 
-# Install required pacman packages
 install_pacman_packages() {
     toInstall=()
     for pkg; do
@@ -38,11 +37,9 @@ install_pacman_packages() {
     on_error_retry sudo pacman --noconfirm -S "${toInstall[@]}"
 }
 
-# Install required yay packages
 install_yay_packages() {
     toInstall=()
 
-    # Install required yay packages
     for pkg; do
         if [[ $(is_installed_yay "${pkg}") == 0 ]]; then
             echo ":: ${pkg} is already installed."
@@ -58,7 +55,6 @@ install_yay_packages() {
     on_error_retry yay -S --noconfirm "${toInstall[@]}"
 }
 
-# Install optional flatpak apps
 install_flathub_packages() {
     toInstall=()
     for pkg; do
