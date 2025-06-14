@@ -5,3 +5,5 @@ bookmarks
 /packages/*/pkg/*/.MTREE
 /packages/*/pkg/*/.PKGINFO
 /packages/*/*.pkg.tar.zst
+/python-packages/python-packages.txt
+/packages/shr-zsh/pkg/shr-zsh/.INSTALL
