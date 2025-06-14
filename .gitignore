@@ -1,7 +1,8 @@
 __pycache__/
 bookmarks
 .idea
-/default-packages/*/pkg/*/.BUILDINFO
-/default-packages/*/pkg/*/.MTREE
-/default-packages/*/pkg/*/.PKGINFO
+/packages/*/pkg/*/.BUILDINFO
+/packages/*/pkg/*/.MTREE
+/packages/*/pkg/*/.PKGINFO
 /packages/*/*.pkg.tar.zst
+/packages/python/python-packages.txt

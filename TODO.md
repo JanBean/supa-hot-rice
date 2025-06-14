@@ -4,3 +4,4 @@
 - [ ] apps bei installation auswählbar machen
 - [ ] uninstall script voll funktionstüchtig machen
 - [ ] packet gruppen überlegen
+- [ ] base config folder in themes wo keyboard shortcuts drin sind und display settings, damit die nicht per theme gesetzt werden müssen
