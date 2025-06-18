@@ -29,7 +29,7 @@ source "$conf_file"
 
 # Unstow theme
 echo ":: Preparing to unstow '$theme_dir'"
-ask_execute stow -D dotfiles -d "$theme_dir" -t "$TARGET"
+ask_execute stow -d "$theme_dir" -t "$TARGET" -D dotfiles
 
 # remove theme related packages
 if [[ "${#packages[@]}" -gt 0 ]] && gum confirm --default=false "Do you want to remove packages installed by this theme?"; then
