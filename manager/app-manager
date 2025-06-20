@@ -12,7 +12,7 @@ install_apps() {
   # Apps installation
   remove_bashcomments_emptylines ./apps/apps.lst ./cache/apps.lst
   readarray -t apps < ./cache/apps.lst
-  ask_execute install_yay_packages "${apps[@]}"
+  ask_execute install_packages is_installed_yay "yay -S" "${apps[@]}"
 
   # Flatpak app installation
   remove_bashcomments_emptylines ./apps/apps-flathub.lst ./cache/apps-flathub.lst
@@ -20,39 +20,61 @@ install_apps() {
   ask_execute install_flathub_packages "${flathub_apps[@]}"
 }
 
-install_pacman_packages() {
-    toInstall=()
-    for pkg; do
-        if [[ $(is_installed_pacman "${pkg}") == 0 ]]; then
-            echo ":: ${pkg} is already installed."
-            continue
-        fi
-        toInstall+=("${pkg}")
-    done
-    if [[ "${toInstall[@]}" == "" ]]; then
-        # nothing to install
-        return
-    fi
-    printf "Package not installed: %s\n" "${toInstall[@]}"
-    on_error_retry sudo pacman --noconfirm -S "${toInstall[@]}"
+install_packages() {
+  is_installed_func="$1"
+  shift
+  install_command="$1"
+  shift
+
+  app_list=()
+  for app; do
+      if [[ $($is_installed_func "${app}") == 0 ]]; then
+          echo ":: ${app} is already installed."
+          continue
+      fi
+      app_list+=("${app}")
+  done
+
+  if [[ "${app_list[@]}" == "" ]]; then
+      echo "Nothing to install."
+      return
+  fi
+
+  options=()
+  for opt in "${app_list[@]}"; do
+      options+=(--selected "$opt")
+  done
+
+  # Prompt user to choose
+  echo -e "\e[34mInstalling the following apps, deselect unwanted:\e[0m"
+
+  selected_apps=$(printf "%s\n" "${app_list[@]}" "CANCEL" | gum choose --no-limit "${options[@]}")
+
+  if [[ -z "$selected_apps" ]] || grep -q "^CANCEL$" <<< "$selected_apps"; then
+      echo -e "\e[31m :: !!!!!!!!!!! Installing apps cancelled!!!!!!!!! \e[0m"
+  else
+      mapfile -t to_install <<< "$selected_apps"
+      on_error_retry $install_command --noconfirm "${to_install[@]}"
+  fi
 }
 
-install_yay_packages() {
-    toInstall=()
 
-    for pkg; do
-        if [[ $(is_installed_yay "${pkg}") == 0 ]]; then
-            echo ":: ${pkg} is already installed."
-            continue
-        fi
-        toInstall+=("${pkg}")
-    done
-    if [[ "${toInstall[@]}" == "" ]]; then
-        # nothing to install
-        return
+is_installed_pacman() {
+    package="$1"
+    if sudo pacman -Qs --color always "${package}" | grep -q "local"; then
+        echo 0  # true
+    else
+        echo 1  # false
     fi
-    printf "Yay package not installed: %s\n" "${toInstall[@]}"
-    on_error_retry yay -S --noconfirm "${toInstall[@]}"
+}
+
+is_installed_yay() {
+    package="$1"
+    if yay -Qq "${package}" &>/dev/null; then
+        echo 0  # true
+    else
+        echo 1  # false
+    fi
 }
 
 install_flathub_packages() {
@@ -76,26 +98,4 @@ install_flathub_packages() {
             on_error_retry flatpak install flathub -y "${pkg}"
         done
     fi
-}
-
-is_installed_pacman() {
-    package="$1"
-    check="$(sudo pacman -Qs --color always "${package}" | grep "local" | grep "${package} ")"
-    if [ -n "${check}" ]; then
-        echo 0 #'0' means 'true' in Bash
-        return #true
-    fi
-    echo 1 #'1' means 'false' in Bash
-    return #false
-}
-
-is_installed_yay() {
-    package="$1"
-    check="$(yay -Qq "${package}" 2>/dev/null)"
-    if [ -n "${check}" ]; then
-        echo 0  # true
-        return 0
-    fi
-    echo 1  # false
-    return 1
 }
