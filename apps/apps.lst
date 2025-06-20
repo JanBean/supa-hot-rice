@@ -5,12 +5,12 @@ firefox
 spotify-launcher
 discord
 flatpak
-1password
 
 blender
 cuda # rendering backend support for blender with nvidia
 
 ################################ AUR Apps #########################################
 
+1password
 pureref # image/reference viewer
 timeshift
