@@ -1,0 +1,9 @@
+pkgname=shr-firewall
+pkgver=1.0
+pkgrel=1
+pkgdesc='Supa Hot Firewall'
+arch=(any)
+license=(None)
+depends=(
+    firewalld                     # firewall
+)

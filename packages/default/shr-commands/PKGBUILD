@@ -12,5 +12,6 @@ depends=(
     stow            # Manage dotfiles
     python-pywal16  # color sheme generation
     gum             # shell shit
-    # less
+	yazi            # cmdline file explorer
+    less            # Terminal pager for viewing large text files one screen at a time. common for git and shit
 )

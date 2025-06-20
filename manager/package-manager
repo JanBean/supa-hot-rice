@@ -32,7 +32,7 @@ prompt_install_packages() {
   done
 
   # Prompt user to choose
-  echo -e "\e[34mInstalling following packages, deselect undwanted:\e[0m"
+  echo -e "\e[34mInstalling following packages, deselect unwanted:\e[0m"
 
   selected_pkgs=$(printf "%s\n" "${pkg_list[@]}" "CANCEL" | gum choose --no-limit "${options[@]}")
 

@@ -5,6 +5,6 @@ pkgdesc='Supa Hot Rice Utility Tools'
 arch=(any)
 license=(None)
 depends=(
-    hyprshot
-	cliphist
+    hyprshot            # Screenshot tool for Hyprland
+	cliphist            # Clipboard manager for Wayland
 )
