@@ -27,13 +27,13 @@ fi
 # Load package names from config
 source "$conf_file"
 
+# remove theme related packages
+if [[ "${#packages[@]}" -gt 0 ]] && gum confirm --default=false "Do you want to remove packages installed by this theme?"; then
+    ask_execute uninstall_theme_packages "$theme" "${packages[@]}"
+fi
+
 # Unstow theme
 echo ":: Preparing to unstow '$theme_dir'"
 ask_execute stow -d "$theme_dir" -t "$TARGET" -D dotfiles
-
-# remove theme related packages
-if [[ "${#packages[@]}" -gt 0 ]] && gum confirm --default=false "Do you want to remove packages installed by this theme?"; then
-    ask_execute uninstall_theme_packages "${packages[@]}"
-fi
 
 echo ":: Theme '$theme' has been uninstalled."

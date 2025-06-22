@@ -14,11 +14,15 @@ install_default_packages() {
   defaultpkgs=($(find ./packages/default/ -mindepth 1 -maxdepth 1 -type d -exec test -f "{}/PKGBUILD" \; -exec basename {} \;))
 
   prompt_install_packages "./packages/default" "${defaultpkgs[@]}"
+  log_installed_packages "default" "${defaultpkgs[@]}"
 }
 
 install_theme_packages() {
-  # Install all collected packages
+  local theme="$1"
+  shift
+
   prompt_install_packages "./packages/themes" "$@"
+  log_installed_packages "$theme" "$@"
 }
 
 prompt_install_packages() {
@@ -41,20 +45,43 @@ prompt_install_packages() {
   else
     mapfile -t selected_pkgs_list <<< "$selected_pkgs"
 
+    installed_packages=()
+
     for pkg in "${selected_pkgs_list[@]}"; do
       pkg_path="$pkg_super_path/$pkg"
       metainstallflags="--needed"
       $ask && showfun install_local_pkgbuild || metainstallflags="$metainstallflags --noconfirm"
+
       ask_execute install_local_pkgbuild "$pkg_path" "$metainstallflags"
+
+      [[ -f "$pkg_path/PKGBUILD" ]] && installed_packages+=("$(source "$pkg_path/PKGBUILD" && echo "${pkgname[0]}")")
     done
   fi
 }
 
-# yay -Bi is kinda hit or miss, instead cd into the relevant directory and manually source and install deps
+log_installed_packages() { # log packages and groups, to track installed packages for uninstalling
+  local pkg_group="$1"
+  shift
+  local pkg_list=("$@")
+
+  local log_dir="$HOME/.shr"
+  local install_log="$log_dir/.$pkg_group-packages.log"
+
+  mkdir -p "$log_dir"
+
+  {
+    echo "# Installed packages for $pkg_group"
+    echo "group=$pkg_group"
+    echo "packages=(${pkg_list[@]})"
+  } >> "$install_log"
+}
+
+
 install_local_pkgbuild() {
 	local location=$1
 	local installflags=$2
 
+  # yay -Bi is kinda hit or miss, instead push into the relevant directory and manually source and install deps
 	on_error_retry pushd $location
 
 	source ./PKGBUILD
@@ -98,12 +125,46 @@ uninstall_default_packages() {
 }
 
 uninstall_theme_packages() {
-  # Remove all theme packages
-  for themepkg in "$@"; do
-    metaremoveflags="--noconfirm"
-    $ask && showfun sudo pacman -Rns || true
-    ask_execute sudo pacman -Rns $metaremoveflags "$themepkg"
+  local theme="$1"
+  shift
+  local conf_pkg_list=("$@")  # Packages from current theme.conf
+
+  local log_file="$HOME/.shr/.$theme-packages.log"
+
+  if [[ ! -f "$log_file" ]]; then
+    echo -e "\e[33m:: No package log found for theme '$theme'. Continuing with theme.conf only...\e[0m"
+  fi
+
+  # Collect packages from log file
+  local logged_pkg_list=()
+  if [[ -f "$log_file" ]]; then
+    eval "$(grep '^packages=' "$log_file")"
+    logged_pkg_list=("${packages[@]}")
+  fi
+
+  # Merge both lists
+  local combined=("${conf_pkg_list[@]}" "${logged_pkg_list[@]}")
+
+  # Strip dir prefixes: dir/pkgname → pkgname
+  local stripped=()
+  for pkg in "${combined[@]}"; do
+    stripped+=("$(basename "$pkg")")
   done
+
+  # Remove duplicates
+  mapfile -t unique_pkgs < <(printf '%s\n' "${stripped[@]}" | sort -u)
+
+  if [[ "${#unique_pkgs[@]}" -eq 0 ]]; then
+    echo -e "\e[33m:: No packages to uninstall for theme '$theme'.\e[0m"
+    return 0
+  fi
+
+  echo -e "\e[34m:: The following packages will be removed:\e[0m"
+  printf " - %s\n" "${unique_pkgs[@]}"
+
+  metaremoveflags="--noconfirm"
+  $ask && showfun sudo pacman -Rns $metaremoveflags "${unique_pkgs[@]}" || true
+  ask_execute sudo pacman -Rns $metaremoveflags "${unique_pkgs[@]}"
 }
 
 prompt_uninstall_packages() {

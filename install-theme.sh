@@ -26,7 +26,7 @@ fi
 
 # Load required package names
 source "$conf_file"
-ask_execute install_theme_packages "${packages[@]}"
+ask_execute install_theme_packages $theme "${packages[@]}"
 
 #stow theme
 echo ":: Preparing to stow '$dir'"
