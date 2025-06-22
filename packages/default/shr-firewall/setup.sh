@@ -1,6 +1,5 @@
 load_setup() {
-    # âctivate and configure firwalld
-
+  # âctivate and configure firwalld
   sudo systemctl enable --now firewalld
   sudo systemctl start firewalld
 }
