@@ -12,12 +12,12 @@ install_apps() {
   # Apps installation
   remove_bashcomments_emptylines ./apps/apps.lst ./cache/apps.lst
   readarray -t apps < ./cache/apps.lst
-  ask_execute install_packages is_installed_yay "yay -S" "${apps[@]}"
+  ask_execute install_packages is_installed_yay "yay -S --noconfirm" "${apps[@]}"
 
   # Flatpak app installation
   remove_bashcomments_emptylines ./apps/apps-flathub.lst ./cache/apps-flathub.lst
   readarray -t flathub_apps < ./cache/apps-flathub.lst
-  ask_execute install_flathub_packages "${flathub_apps[@]}"
+  ask_execute install_packages is_installed_flatpak "flatpak install flathub -y" "${flathub_apps[@]}"
 }
 
 install_packages() {
@@ -46,7 +46,7 @@ install_packages() {
   done
 
   # Prompt user to choose
-  echo -e "\e[34mInstalling the following apps, deselect unwanted:\e[0m"
+  echo -e "\e[34mInstalling the following apps using "$install_command" , deselect unwanted:\e[0m"
 
   selected_apps=$(printf "%s\n" "${app_list[@]}" "CANCEL" | gum choose --no-limit "${options[@]}")
 
@@ -54,7 +54,7 @@ install_packages() {
       echo -e "\e[31m :: !!!!!!!!!!! Installing apps cancelled!!!!!!!!! \e[0m"
   else
       mapfile -t to_install <<< "$selected_apps"
-      on_error_retry $install_command --noconfirm "${to_install[@]}"
+      on_error_retry $install_command "${to_install[@]}"
   fi
 }
 
@@ -77,25 +77,11 @@ is_installed_yay() {
     fi
 }
 
-install_flathub_packages() {
-    toInstall=()
-    for pkg; do
-        # check if already installed
-        if flatpak list --app | awk '{print $2}' | grep -q "^$pkg$"; then
-            echo ":: ${pkg} is already installed."
-            continue
-        fi
-        toInstall+=("${pkg}")
-    done
-    
-    if [[ "${toInstall[@]}" == "" ]]; then
-        # nothing to install 
-        return
-    fi
-
-    if gum confirm "Install flatpak apps?"; then
-        for pkg in "${toInstall[@]}"; do
-            on_error_retry flatpak install flathub -y "${pkg}"
-        done
+is_installed_flatpak() {
+    package="$1"
+    if flatpak list --app | awk '{print $2}' | grep -q "^$package$"; then
+        echo 0  # true
+    else
+        echo 1  # false
     fi
 }
