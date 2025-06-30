@@ -1,5 +1,4 @@
 - [ ] nvidia drivers ?
-- [ ] apps bei installation auswählbar machen
 - [ ] base config folder in themes wo keyboard shortcuts drin sind und display settings, damit die nicht per theme gesetzt werden müssen
 
 - [ ] uninstall script voll funktionstüchtig machen
