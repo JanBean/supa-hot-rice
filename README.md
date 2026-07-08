@@ -1,7 +1,7 @@
 # Supa Hot Rice
  Supa hot Arch rice dot files and shit
 
- Run at your own risk lol
+ Run at your own risk lololololol
 <details> 
   <summary>Instructions</summary>
 
