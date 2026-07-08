@@ -41,6 +41,8 @@
         "custom/separator#blank", 
         "bluetooth",
         "custom/separator#blank",
+        "battery",
+        "custom/separator#blank",
         "custom/power",
     ],
     
@@ -131,6 +133,22 @@
         "tooltip-format-enumerate-connected-battery": "{device_alias}\n{device_address}\n{device_battery_percentage}%",
         "on-click-right": "blueman-manager",
     }, 
+
+    "battery": {
+        "bat": "BAT0",
+        "adapter": "AC0",
+        "interval": 30,
+        "states": {
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "{icon} {capacity}%",
+        "format-charging": "󰂄 {capacity}%",
+        "format-plugged": " {capacity}%",
+        "format-full": "󰁹 {capacity}%",
+        "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+        "tooltip-format": "{capacity}% - {time}",
+    },
     
     "custom/notification": {
         "tooltip": false,

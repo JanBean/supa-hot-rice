@@ -220,6 +220,19 @@ tooltip {
     animation-direction: alternate;
 }
 
+#battery.charging,
+#battery.plugged {
+    color: @color2;
+}
+
+#battery.warning:not(.charging):not(.plugged) {
+    color: @color3;
+}
+
+#battery.full {
+    color: @color4;
+}
+
 #pulseaudio-slider slider {
     min-width: 0px;
     min-height: 0px;
