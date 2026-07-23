@@ -71,18 +71,32 @@ ZSH_THEME="agnoster"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(
-    git
-    sudo
-    archlinux
-    # zsh-syntax-highlighting
-    # fast-syntax-highlighting
-    zsh-autosuggestions
-)
+# plugins=(
+#     git
+#     sudo
+#     archlinux
+#     # zsh-syntax-highlighting
+#     # fast-syntax-highlighting
+#     zsh-autosuggestions
+# )
 
-source $ZSH/oh-my-zsh.sh
+# source $ZSH/oh-my-zsh.sh
 
 # User configuration
+
+# Persistent shell history. Keep this before prompt initialization so every
+# interactive shell gets the same history behavior.
+HISTFILE="$HOME/.zsh_history"
+HISTSIZE=10000
+SAVEHIST=10000
+setopt APPEND_HISTORY
+setopt EXTENDED_HISTORY
+setopt HIST_EXPIRE_DUPS_FIRST
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_IGNORE_SPACE
+setopt HIST_REDUCE_BLANKS
+setopt INC_APPEND_HISTORY
+setopt SHARE_HISTORY
 
 # export MANPATH="/usr/local/man:$MANPATH"
 
@@ -122,3 +136,5 @@ eval "$(oh-my-posh init zsh --config ~/.config/ohmyposh/craver.omp.json)"
 XDG_MENU_PREFIX=arch- kbuildsycoca6 > /dev/null 2>&1
 
 fastfetch
+export PATH="/opt/flutter/bin:$PATH"
+export CHROME_EXECUTABLE=/usr/bin/chromium
