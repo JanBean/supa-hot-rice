@@ -1,19 +1,16 @@
 load_setup() {
   echo "loading sssystem core setup..."
-  if gum confirm --default=true "Set Desktop wallpaper? (Some themes require a Wallpaper)"; then
 
-    DEFAULT_PATH="themes/sssystem-theme/dotfiles/.config/hypr/resources/ruan-jia.jpg"
-    wallpaper_path=$(gum input --placeholder "$DEFAULT_PATH" --prompt "Enter path to wallpaper: ")
+  if ! declare -F resolve_theme_wallpaper_config >/dev/null; then
+    source "$base/scriptdata/wallpapers"
+  fi
 
-    dir
+  resolve_theme_wallpaper_config
 
-    # Fallback if user enters nothing (just presses Enter)
-    wallpaper_path="${wallpaper_path:-$DEFAULT_PATH}"
-    if [ -n "$wallpaper_path" ]; then
-      ask_execute wal -i "$wallpaper_path"
-    else
-      echo "No path specified, continuing symlinking dotfiles"
-    fi
+  if [ -n "$THEME_WALLPAPER" ]; then
+    ask_execute wal -i "$THEME_WALLPAPER"
+  else
+    echo "No wallpaper configured for this theme."
   fi
 }
 

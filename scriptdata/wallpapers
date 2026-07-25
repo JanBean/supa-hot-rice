@@ -1,0 +1,72 @@
+# Shared wallpaper configuration helpers.
+
+function wallpaper_absolute_path() {
+  local path="$1"
+
+  case "$path" in
+    "") return 1 ;;
+    /*) printf '%s\n' "$path" ;;
+    *) printf '%s\n' "$base/$path" ;;
+  esac
+}
+
+function first_wallpaper_in_dirs() {
+  local wallpaper_dir
+  local wallpaper_file
+
+  for wallpaper_dir in "$@"; do
+    [[ -d "$wallpaper_dir" ]] || continue
+    wallpaper_file="$(find "$wallpaper_dir" -maxdepth 1 -type f \
+      \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \) \
+      | sort \
+      | head -n 1)"
+    if [[ -n "$wallpaper_file" ]]; then
+      printf '%s\n' "$wallpaper_file"
+      return 0
+    fi
+  done
+}
+
+function load_active_theme_config() {
+  local hypr_config
+  local theme_path
+
+  hypr_config="$(readlink -f "$HOME/.config/hypr/hyprland.conf")"
+  case "$hypr_config" in
+    */supa-hot-rice/themes/*/dotfiles/.config/hypr/hyprland.conf)
+      base="${hypr_config%%/themes/*}"
+      theme_path="${hypr_config#"$base/themes/"}"
+      ACTIVE_THEME="${theme_path%%/*}"
+      ;;
+    *)
+      base="${base:-$HOME/supa-hot-rice}"
+      ACTIVE_THEME="${ACTIVE_THEME:-sssystem-theme}"
+      ;;
+  esac
+
+  source "$base/themes/$ACTIVE_THEME/theme.conf"
+}
+
+function resolve_theme_wallpaper_config() {
+  local configured_dirs=("${wallpaper_dirs[@]:-wallpapers/artistic}")
+  local configured_wallpaper="${wallpaper:-${wallpaper_default:-}}"
+  local configured_fallback="${fallback_wallpaper:-wallpapers/artistic/ruan-jia.jpg}"
+  local wallpaper_dir
+
+  THEME_WALLPAPER_DIRS=()
+  for wallpaper_dir in "${configured_dirs[@]}"; do
+    THEME_WALLPAPER_DIRS+=("$(wallpaper_absolute_path "$wallpaper_dir")")
+  done
+
+  THEME_FALLBACK_WALLPAPER="$(wallpaper_absolute_path "$configured_fallback")"
+
+  if [[ -n "$configured_wallpaper" ]]; then
+    THEME_WALLPAPER="$(wallpaper_absolute_path "$configured_wallpaper")"
+  else
+    THEME_WALLPAPER="$(first_wallpaper_in_dirs "${THEME_WALLPAPER_DIRS[@]}")"
+  fi
+
+  if [[ ! -f "$THEME_WALLPAPER" ]]; then
+    THEME_WALLPAPER="$THEME_FALLBACK_WALLPAPER"
+  fi
+}

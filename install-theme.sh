@@ -2,6 +2,7 @@
 cd "$(dirname "$0")"
 export base="$(pwd)"
 source ./scriptdata/functions
+source ./scriptdata/wallpapers
 source ./manager/package-manager
 
 set -e
