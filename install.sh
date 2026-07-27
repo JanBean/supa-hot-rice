@@ -51,9 +51,9 @@ step_system_update() {
 
 
 step_set_up_installers() {
-  # isntall yay, because paru does not support cleanbuild. Also see https://wiki.hyprland.org/FAQ/#how-do-i-update
-  if ! command -v yay >/dev/null 2>&1;then
-    echo -e "\e[33m[$0]: \"yay\" not found.\e[0m"
+  # Install yay, because paru does not support cleanbuild. Also see https://wiki.hyprland.org/FAQ/#how-do-i-update
+  if ! command -v yay >/dev/null 2>&1 || ! yay --version >/dev/null 2>&1; then
+    echo -e "\e[33m[$0]: \"yay\" not found or broken.\e[0m"
     showfun install-yay
     ask_execute install-yay
   fi
